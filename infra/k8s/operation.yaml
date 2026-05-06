@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: operation-config
+  namespace: ai-platform-core
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "aiplatform"
+  POSTGRES_USER: "aiplatform"
+  REDIS_PORT: "6379"
+  MINIO_ACCESS_KEY: "aiplatform"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: operation-secret
+  namespace: ai-platform-core
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "AiPlatform2026Pg!"
+  MINIO_SECRET_KEY: "AiPlatform2026Minio!"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operation
+  namespace: ai-platform-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: operation
+  template:
+    metadata:
+      labels:
+        app: operation
+    spec:
+      containers:
+        - name: operation
+          image: ai-platform/operation:latest
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: operation-config
+            - secretRef:
+                name: operation-secret
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+            initialDelaySeconds: 60
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: operation
+  namespace: ai-platform-core
+spec:
+  selector:
+    app: operation
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: ClusterIP

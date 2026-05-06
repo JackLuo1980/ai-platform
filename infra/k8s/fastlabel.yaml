@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastlabel-config
+  namespace: ai-platform-core
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "aiplatform"
+  POSTGRES_USER: "aiplatform"
+  REDIS_PORT: "6379"
+  MINIO_ACCESS_KEY: "aiplatform"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fastlabel-secret
+  namespace: ai-platform-core
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "AiPlatform2026Pg!"
+  MINIO_SECRET_KEY: "AiPlatform2026Minio!"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastlabel
+  namespace: ai-platform-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastlabel
+  template:
+    metadata:
+      labels:
+        app: fastlabel
+    spec:
+      containers:
+        - name: fastlabel
+          image: ai-platform/fastlabel:latest
+          ports:
+            - containerPort: 8085
+          envFrom:
+            - configMapRef:
+                name: fastlabel-config
+            - secretRef:
+                name: fastlabel-secret
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "768Mi"
+            limits:
+              cpu: "1"
+              memory: "1536Mi"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8085
+            initialDelaySeconds: 60
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastlabel
+  namespace: ai-platform-core
+spec:
+  selector:
+    app: fastlabel
+  ports:
+    - port: 8085
+      targetPort: 8085
+  type: ClusterIP
