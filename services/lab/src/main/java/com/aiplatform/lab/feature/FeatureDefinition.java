@@ -1,0 +1,17 @@
+package com.aiplatform.lab.feature;
+
+import com.aiplatform.lab.common.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("lab_feature_definition")
+public class FeatureDefinition extends BaseEntity {
+    private String groupId;
+    private String name;
+    private String dtype;
+    private String description;
+    private String defaultValue;
+}

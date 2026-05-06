@@ -1,0 +1,16 @@
+package com.aiplatform.lab.workflow;
+
+import com.aiplatform.lab.common.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("lab_workflow")
+public class Workflow extends BaseEntity {
+    private String projectId;
+    private String name;
+    private String description;
+    private String dagJson;
+}

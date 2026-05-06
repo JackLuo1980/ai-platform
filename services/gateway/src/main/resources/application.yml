@@ -1,0 +1,76 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+            allow-credentials: true
+      routes:
+        - id: console-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/console/**
+          filters:
+            - StripPrefix=1
+
+        - id: operation-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/operation/**
+          filters:
+            - StripPrefix=1
+
+        - id: lab-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/lab/**
+          filters:
+            - StripPrefix=1
+
+        - id: inference-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/inference/**
+          filters:
+            - StripPrefix=1
+
+        - id: fastlabel-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/fastlabel/**
+          filters:
+            - StripPrefix=1
+
+        - id: scorecard-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/scorecard/**
+          filters:
+            - StripPrefix=1
+
+jwt:
+  secret: AiPlatformJwtSecretKey2024ForProductionUseMustBe256Bits!!
+  access-token-expiration: 7200000
+  refresh-token-expiration: 604800000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.aiplatform.gateway: INFO
+    org.springframework.cloud.gateway: INFO

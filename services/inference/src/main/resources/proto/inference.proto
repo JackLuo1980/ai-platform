@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package inference;
+
+option java_multiple_files = true;
+option java_package = "com.aiplatform.inference.grpc";
+
+service InferenceService {
+    rpc Predict (PredictRequest) returns (PredictResponse);
+    rpc StreamPredict (stream PredictRequest) returns (stream PredictResponse);
+    rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message PredictRequest {
+    string service_id = 1;
+    string model_path = 2;
+    map<string, double> features = 3;
+    map<string, string> params = 4;
+    bool raw_output = 5;
+}
+
+message PredictResponse {
+    int32 code = 1;
+    string message = 2;
+    double prediction = 3;
+    double confidence = 4;
+    map<string, double> probabilities = 5;
+    string raw_output = 6;
+    int64 latency_ns = 7;
+}
+
+message HealthCheckRequest {
+    string service_id = 1;
+}
+
+message HealthCheckResponse {
+    bool healthy = 1;
+    string status = 2;
+    int64 uptime_ms = 3;
+}
