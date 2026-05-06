@@ -56,8 +56,11 @@ public class DriftDetectionService {
     public ModelDriftReport checkPredictionDrift(Long modelId, String modelName, String modelVersion,
                                                    long[] baselineCounts, long[] currentCounts) {
         ChiSquareTest chiSquareTest = new ChiSquareTest();
-        double pValue = chiSquareTest.chiSquareTest(baselineCounts, currentCounts);
-        double statistic = chiSquareTest.chiSquare(baselineCounts, currentCounts);
+        double[] baselineD = Arrays.stream(baselineCounts).asDoubleStream().toArray();
+        double[] currentD = Arrays.stream(currentCounts).asDoubleStream().toArray();
+        long[] currentL = currentCounts;
+        double pValue = chiSquareTest.chiSquareTest(baselineD, currentL);
+        double statistic = chiSquareTest.chiSquare(baselineD, currentL);
 
         boolean isDrifted = pValue < DEFAULT_THRESHOLD.doubleValue();
 

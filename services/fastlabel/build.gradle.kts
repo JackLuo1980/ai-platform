@@ -10,6 +10,7 @@ dependencies {
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
     implementation(libs.mybatis.plus.spring.boot3.starter)
+    implementation("com.baomidou:mybatis-plus-jsqlparser:3.5.9")
     implementation(libs.minio)
     implementation(libs.jackson.databind)
     runtimeOnly(libs.postgresql)

@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {"com.aiplatform.console", "com.aiplatform.common"})
-@MapperScan("com.aiplatform.console.**")
+@MapperScan("com.aiplatform.console")
 public class ConsoleApplication {
 
     public static void main(String[] args) {

@@ -10,7 +10,6 @@ dependencies {
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.springdoc.openapi.starter.webflux.ui)
     implementation(project(":shared:common-model"))
-    implementation(project(":shared:common-security"))
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.spring.boot.configuration.processor)

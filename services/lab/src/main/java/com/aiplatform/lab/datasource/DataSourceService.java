@@ -76,7 +76,7 @@ public class DataSourceService {
         JSONObject config = JSON.parseObject(ds.getConfig());
         try {
             String host = config.getString("host");
-            int port = config.getIntValue("port", 21);
+            int port = config.containsKey("port") ? config.getIntValue("port") : 21;
             String user = config.getString("username");
             String pass = config.getString("password");
             org.apache.commons.net.ftp.FTPClient ftp = new org.apache.commons.net.ftp.FTPClient();
@@ -124,7 +124,7 @@ public class DataSourceService {
             String url = config.getString("url");
             String user = config.getString("username");
             String pass = config.getString("password");
-            String driver = config.getString("driverClassName", "org.postgresql.Driver");
+            String driver = config.containsKey("driverClassName") ? config.getString("driverClassName") : "org.postgresql.Driver";
             Class.forName(driver);
             Connection conn = DriverManager.getConnection(url, user, pass);
             conn.close();

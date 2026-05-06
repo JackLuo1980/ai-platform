@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgresql:5432/aiplatform}
+    username: ${SPRING_DATASOURCE_USERNAME:aiplatform}
+    password: ${SPRING_DATASOURCE_PASSWORD:AiPlatform2026Pg!}
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:redis}
+      port: ${SPRING_DATA_REDIS_PORT:6379}

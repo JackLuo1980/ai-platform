@@ -2,58 +2,51 @@ server:
   port: 8080
 
 spring:
-  application:
-    name: ai-gateway
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
   cloud:
+    compatibility-verifier:
+      enabled: false
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOriginPatterns: "*"
-            allowed-methods: "*"
-            allowed-headers: "*"
       routes:
         - id: console-service
-          uri: http://localhost:8081
+          uri: http://console:8081
           predicates:
             - Path=/api/console/**
           filters:
-            - StripPrefix=1
-
+            - StripPrefix=2
         - id: operation-service
-          uri: http://localhost:8082
+          uri: http://operation:8082
           predicates:
             - Path=/api/operation/**
           filters:
-            - StripPrefix=1
-
+            - StripPrefix=2
         - id: lab-service
-          uri: http://localhost:8083
+          uri: http://lab:8083
           predicates:
             - Path=/api/lab/**
           filters:
-            - StripPrefix=1
-
+            - StripPrefix=2
         - id: inference-service
-          uri: http://localhost:8084
+          uri: http://inference:8084
           predicates:
             - Path=/api/inference/**
           filters:
-            - StripPrefix=1
-
+            - StripPrefix=2
         - id: fastlabel-service
-          uri: http://localhost:8085
+          uri: http://fastlabel:8085
           predicates:
             - Path=/api/fastlabel/**
           filters:
-            - StripPrefix=1
-
+            - StripPrefix=2
         - id: scorecard-service
-          uri: http://localhost:8086
+          uri: http://scorecard:8086
           predicates:
             - Path=/api/scorecard/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
 jwt:
   secret: AiPlatformJwtSecretKey2024ForProductionUseMustBe256Bits!!
@@ -65,11 +58,7 @@ management:
     web:
       exposure:
         include: health,info
-  endpoint:
-    health:
-      show-details: always
 
 logging:
   level:
     com.aiplatform.gateway: INFO
-    org.springframework.cloud.gateway: INFO

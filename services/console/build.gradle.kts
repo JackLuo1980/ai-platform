@@ -9,6 +9,7 @@ dependencies {
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.data.redis)
     implementation(libs.spring.boot.starter.validation)
+    implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
     implementation(libs.flyway.core)
