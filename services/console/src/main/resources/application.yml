@@ -5,7 +5,7 @@ spring:
   application:
     name: console-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/aiplatform
+    url: jdbc:postgresql://localhost:5432/aiplatform?stringtype=unspecified
     username: aiplatform
     password: aiplatform_pwd
     driver-class-name: org.postgresql.Driver

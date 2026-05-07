@@ -4,6 +4,7 @@ import com.aiplatform.common.model.PageResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,6 +12,9 @@ public class AuditLogService {
 
     @Autowired
     private AuditLogMapper auditLogMapper;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public PageResult<AuditLog> list(int page, int size, Long tenantId, Long userId, String action) {
         Page<AuditLog> pageParam = new Page<>(page + 1, size);
@@ -30,6 +34,9 @@ public class AuditLogService {
     }
 
     public void save(AuditLog auditLog) {
+        if (auditLog.getDetailJson() == null) {
+            auditLog.setDetailJson("{}");
+        }
         auditLogMapper.insert(auditLog);
     }
 }
