@@ -4,6 +4,14 @@ plugins {
     alias(libs.plugins.spring.dependency.management)
 }
 
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    enabled = false
+}
+
+tasks.named<Jar>("jar") {
+    enabled = true
+}
+
 dependencies {
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.jackson.databind)

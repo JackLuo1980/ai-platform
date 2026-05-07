@@ -2,6 +2,23 @@ plugins {
     java
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
+    id("com.google.protobuf") version "0.9.4"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:4.29.3"
+    }
+    plugins {
+        create("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.69.0"
+        }
+    }
+    generateProtoTasks {
+        all().forEach {
+            it.plugins.create("grpc")
+        }
+    }
 }
 
 dependencies {
@@ -18,6 +35,14 @@ dependencies {
     implementation(libs.nats)
     implementation(libs.minio)
     implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation(libs.grpc.protobuf)
+    implementation(libs.grpc.stub)
+    implementation(libs.grpc.server.spring.boot)
+    runtimeOnly("io.grpc:grpc-core:1.69.0")
+    runtimeOnly("io.grpc:grpc-netty-shaded:1.69.0")
+    implementation(libs.protobuf.java)
+    implementation(libs.javax.annotation)
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
     runtimeOnly(libs.postgresql)
     implementation(project(":shared:common-model"))
     implementation(project(":shared:common-security"))

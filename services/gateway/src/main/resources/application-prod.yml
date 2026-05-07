@@ -24,29 +24,29 @@ spring:
           filters:
             - StripPrefix=2
         - id: lab-service
-          uri: http://lab:8083
+          uri: http://10.0.0.3:8083
           predicates:
             - Path=/api/lab/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=1
         - id: inference-service
-          uri: http://inference:8084
+          uri: http://10.0.0.3:8084
           predicates:
             - Path=/api/inference/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=1
         - id: fastlabel-service
-          uri: http://fastlabel:8085
+          uri: http://10.0.0.3:8085
           predicates:
             - Path=/api/fastlabel/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=1
         - id: scorecard-service
-          uri: http://scorecard:8086
+          uri: http://10.0.0.3:8086
           predicates:
             - Path=/api/scorecard/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=1
 
 jwt:
   secret: AiPlatformJwtSecretKey2024ForProductionUseMustBe256Bits!!

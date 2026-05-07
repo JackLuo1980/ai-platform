@@ -10,6 +10,8 @@ jjwt = "0.12.6"
 minio = "8.5.14"
 nats = "2.20.4"
 protobuf = "4.29.3"
+grpc = "1.69.0"
+grpc-spring-boot = "3.1.0.RELEASE"
 testcontainers = "1.20.4"
 mockito = "5.14.2"
 kotlin = "2.1.0"
@@ -46,6 +48,12 @@ minio = { module = "io.minio:minio", version.ref = "minio" }
 nats = { module = "io.nats:jnats", version.ref = "nats" }
 
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-protoc-gen = { module = "io.grpc:protoc-gen-java", version.ref = "grpc" }
+grpc-server-spring-boot = { module = "net.devh:grpc-spring-boot-starter", version.ref = "grpc-spring-boot" }
+javax-annotation = { module = "jakarta.annotation:jakarta.annotation-api" }
 
 postgresql = { module = "org.postgresql:postgresql" }
 h2 = { module = "com.h2database:h2" }
