@@ -4,6 +4,7 @@ import com.aiplatform.inference.common.PageResult;
 import com.aiplatform.inference.common.R;
 import com.aiplatform.inference.model.entity.InferenceModel;
 import com.aiplatform.inference.model.service.InferenceModelService;
+import com.aiplatform.inference.version.service.VersionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,7 @@ import java.util.Map;
 public class InferenceModelController {
 
     private final InferenceModelService modelService;
+    private final VersionService versionService;
 
     @PostMapping("/import")
     public R<InferenceModel> importFromLab(@RequestBody Map<String, Object> params) {
@@ -50,6 +52,23 @@ public class InferenceModelController {
     public R<InferenceModel> auditReject(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
         String remark = body != null ? body.get("remark") : null;
         return R.ok(modelService.auditReject(id, remark));
+    }
+
+
+    @GetMapping("/{id}/versions")
+    public R<java.util.List<InferenceModel>> getVersions(@PathVariable Long id) {
+        return R.ok(modelService.listVersions(id));
+    }
+
+
+    @PostMapping("/{id}/rollback")
+    public R<Map<String, Object>> rollbackModel(@PathVariable Long id, @RequestBody Map<String, Object> params) {
+        var onlineServiceId = Long.valueOf(params.get("onlineServiceId").toString());
+        var result = versionService.rollback(onlineServiceId, id);
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("modelId", id);
+        response.put("onlineService", result);
+        return R.ok(response);
     }
 
     @GetMapping

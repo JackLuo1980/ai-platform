@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, List, Typography, Space, Badge, message } from 'antd';
-import { MailOutlined, MailFilled, DeleteOutlined } from '@ant-design/icons';
+import { MailOutlined, MailFilled, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
 import { listMessages, markMessageRead, markMessageUnread, deleteMessage } from '@/services/console';
 
 const { Text } = Typography;
@@ -15,37 +15,46 @@ function MessageList() {
     setLoading(true);
     try {
       const res: any = await listMessages({ page: page - 1, size: 20 });
-      setMessages(res.data?.items || res.items || []);
-      setTotal(res.data?.total || res.total || 0);
+      const d = res?.data || res || {};
+      setMessages(d.items || []);
+      setTotal(d.total || 0);
+    } catch {
+      message.error('加载失败');
     } finally {
       setLoading(false);
     }
   }
 
-  useState(function () {
-    loadMessages();
-  });
+  useEffect(function () { loadMessages(); }, [page]);
 
   async function handleToggleRead(item: Record<string, unknown>) {
-    if (item.read) {
-      await markMessageUnread(item.id as string);
-    } else {
-      await markMessageRead(item.id as string);
+    try {
+      if (item.read) {
+        await markMessageUnread(item.id as string);
+      } else {
+        await markMessageRead(item.id as string);
+      }
+      message.success('已更新');
+      loadMessages();
+    } catch {
+      message.error('操作失败');
     }
-    message.success('Updated');
-    loadMessages();
   }
 
   async function handleDelete(id: string) {
-    await deleteMessage(id);
-    message.success('Deleted');
-    loadMessages();
+    try {
+      await deleteMessage(id);
+      message.success('已删除');
+      loadMessages();
+    } catch {
+      message.error('删除失败');
+    }
   }
 
   return (
     <div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button icon={<ReloadOutlined />} onClick={loadMessages}>Refresh</Button>
+        <Button icon={<ReloadOutlined />} onClick={loadMessages}>刷新</Button>
       </div>
       <List
         loading={loading}
@@ -56,9 +65,9 @@ function MessageList() {
             <List.Item
               actions={[
                 <Button type="link" size="small" icon={item.read ? <MailOutlined /> : <MailFilled />} onClick={function () { handleToggleRead(item); }}>
-                  {item.read ? 'Unread' : 'Read'}
+                  {item.read ? '未读' : '已读'}
                 </Button>,
-                <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(item.id); }}>Delete</Button>,
+                <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(item.id); }}>删除</Button>,
               ]}
             >
               <List.Item.Meta

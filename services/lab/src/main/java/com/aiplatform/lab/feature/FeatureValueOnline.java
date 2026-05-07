@@ -10,12 +10,10 @@ import java.time.LocalDateTime;
 @Data
 @TableName("feature_values_online")
 public class FeatureValueOnline {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String id;
-    private String tenantId;
-    private String groupId;
-    private String definitionId;
-    private String entityKeyValue;
-    private String value;
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private Long groupId;
+    private String entityKey;
+    private String featureJson;
     private LocalDateTime updatedAt;
 }

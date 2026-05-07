@@ -9,8 +9,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("model_files")
 public class ModelFile extends BaseEntity {
-    private String archiveId;
-    private String fileName;
+    private Long archiveId;
     private String filePath;
     private Long fileSize;
+    private String checksum;
+    private Integer deleted;
 }

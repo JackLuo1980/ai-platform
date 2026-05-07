@@ -9,13 +9,15 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("datasets")
 public class Dataset extends BaseEntity {
-    private String projectId;
+    private Long projectId;
     private String name;
-    private String description;
-    private String sourceType;
-    private String sourceId;
-    private String schema;
-    private Long rowCount;
-    private Long fileSize;
+    private String type;
+    private Long sourceId;
     private String storagePath;
+    private String schemaJson;
+    private Long rowCount;
+    private Long sizeBytes;
+    private Integer version;
+    private String description;
+    private String status;
 }

@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Upload, message, Tag, Space } from 'antd';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { getLabelDatasets, createLabelDataset } from '@/services/fastlabel';
+import { useState, useEffect } from 'react';
+import { Table, Button, Modal, Form, Input, Select, message, Tag, Space } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { listLabelDatasets, createLabelDataset } from '@/services/fastlabel';
 
-const { Option } = Select;
-
-export default function LabelDatasetListPage() {
-  const [datasets, setDatasets] = useState([]);
+function LabelDatasetList() {
+  const [datasets, setDatasets] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [importVisible, setImportVisible] = useState(false);
   const [typeFilter, setTypeFilter] = useState<string>('');
@@ -17,84 +15,73 @@ export default function LabelDatasetListPage() {
 
   function fetchDatasets() {
     setLoading(true);
-    getLabelDatasets({ page, pageSize, type: typeFilter })
-      .then(function (res) {
-        setDatasets(res.data.data.items || []);
-        setTotal(res.data.data.total || 0);
+    listLabelDatasets({ page, size: pageSize, type: typeFilter || undefined })
+      .then(function (res: any) {
+        const d = res?.data || res || {};
+        setDatasets(d.items || d.content || []);
+        setTotal(d.total || d.totalElements || 0);
       })
-      .catch(function () { message.error('Failed to load datasets'); })
+      .catch(function () { message.error('加载失败'); })
       .finally(function () { setLoading(false); });
   }
 
   useEffect(function () { fetchDatasets(); }, [page, pageSize, typeFilter]);
 
-  function handleImport(values: any) {
+  function handleImport(values: Record<string, unknown>) {
     createLabelDataset(values)
       .then(function () {
-        message.success('Dataset created');
+        message.success('数据集已创建');
         setImportVisible(false);
         importForm.resetFields();
         fetchDatasets();
       })
-      .catch(function () { message.error('Failed to create dataset'); });
+      .catch(function () { message.error('创建失败'); });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Type', dataIndex: 'type', key: 'type', render: function (type: string) { return <Tag>{type}</Tag>; } },
-    { title: 'Item Count', dataIndex: 'itemCount', key: 'itemCount' },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: function (status: string) {
-        const colors: Record<string, string> = { ready: 'green', importing: 'orange', empty: 'default' };
-        return <Tag color={colors[status] || 'default'}>{status}</Tag>;
-      },
-    },
-    { title: 'Created At', dataIndex: 'createdAt', key: 'createdAt' },
+    { title: '名称', dataIndex: 'name' },
+    { title: '类型', dataIndex: 'type', render: function (type: string) { return <Tag>{type}</Tag>; } },
+    { title: '数据量', dataIndex: 'itemCount' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <Tag color={status === 'ready' ? 'green' : 'orange'}>{status}</Tag>; } },
+    { title: '创建时间', dataIndex: 'createdAt' },
   ];
 
   return (
     <div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <h2>Label Datasets</h2>
+        <h2>标注数据集</h2>
         <Space>
-          <Select value={typeFilter} onChange={setTypeFilter} style={{ width: 140 }} placeholder="Filter by type" allowClear>
-            <Option value="image">Image</Option>
-            <Option value="text">Text</Option>
-            <Option value="audio">Audio</Option>
-            <Option value="video">Video</Option>
+          <Select value={typeFilter || undefined} onChange={function (v) { setTypeFilter(v || ''); }} style={{ width: 140 }} placeholder="类型筛选" allowClear>
+            <Select.Option value="image">图片</Select.Option>
+            <Select.Option value="text">文本</Select.Option>
+            <Select.Option value="audio">音频</Select.Option>
+            <Select.Option value="video">视频</Select.Option>
           </Select>
-          <Button type="primary" icon={<PlusOutlined />} onClick={function () { setImportVisible(true); }}>Import</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={function () { setImportVisible(true); }}>导入</Button>
         </Space>
       </div>
-      <Table rowKey="id" columns={columns} dataSource={datasets} loading={loading} pagination={{ current: page, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p); setPageSize(ps); } }} />
-      <Modal title="Import Dataset" open={importVisible} onCancel={function () { setImportVisible(false); }} onOk={function () { importForm.submit(); }}>
+      <Table rowKey="id" columns={columns} dataSource={datasets} loading={loading} pagination={{ current: page + 1, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p - 1); setPageSize(ps); } }} />
+      <Modal title="导入数据集" open={importVisible} onCancel={function () { setImportVisible(false); }} onOk={function () { importForm.submit(); }}>
         <Form form={importForm} layout="vertical" onFinish={handleImport}>
-          <Form.Item name="name" label="Dataset Name" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="type" label="Type" rules={[{ required: true }]}>
-            <Select placeholder="Select type">
-              <Option value="image">Image</Option>
-              <Option value="text">Text</Option>
-              <Option value="audio">Audio</Option>
-              <Option value="video">Video</Option>
+          <Form.Item name="name" label="数据集名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="type" label="类型" rules={[{ required: true }]}>
+            <Select placeholder="选择类型">
+              <Select.Option value="image">图片</Select.Option>
+              <Select.Option value="text">文本</Select.Option>
+              <Select.Option value="audio">音频</Select.Option>
+              <Select.Option value="video">视频</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="source" label="Source" rules={[{ required: true }]}>
-            <Select placeholder="Select source">
-              <Option value="upload">Upload Files</Option>
-              <Option value="lab">From Lab Dataset</Option>
+          <Form.Item name="source" label="来源" rules={[{ required: true }]}>
+            <Select placeholder="选择来源">
+              <Select.Option value="upload">上传文件</Select.Option>
+              <Select.Option value="lab">实验室数据集</Select.Option>
             </Select>
-          </Form.Item>
-          <Form.Item name="files" label="Files" valuePropName="fileList" getValueFromEvent={function (e) { return Array.isArray(e) ? e : e?.fileList; }}>
-            <Upload.Dragger beforeUpload={function () { return false; }}>
-              <p><UploadOutlined style={{ fontSize: 24 }} /></p>
-              <p>Click or drag files to upload</p>
-            </Upload.Dragger>
           </Form.Item>
         </Form>
       </Modal>
     </div>
   );
 }
+
+export default LabelDatasetList;

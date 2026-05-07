@@ -23,33 +23,33 @@ public class DatasetController {
     }
 
     @PutMapping("/{id}")
-    public R<Dataset> update(@PathVariable String id, @RequestBody Dataset dataset) {
+    public R<Dataset> update(@PathVariable Long id, @RequestBody Dataset dataset) {
         dataset.setId(id);
         return R.ok(datasetService.update(dataset));
     }
 
     @DeleteMapping("/{id}")
-    public R<Void> delete(@PathVariable String id) {
+    public R<Void> delete(@PathVariable Long id) {
         datasetService.delete(id);
         return R.ok();
     }
 
     @GetMapping("/{id}")
-    public R<Dataset> get(@PathVariable String id) {
+    public R<Dataset> get(@PathVariable Long id) {
         return R.ok(datasetService.getById(id));
     }
 
     @GetMapping
     public R<PageResult<Dataset>> list(@RequestParam(defaultValue = "0") int page,
                                        @RequestParam(defaultValue = "20") int size,
-                                       @RequestParam(required = false) String tenantId,
-                                       @RequestParam(required = false) String projectId) {
+                                       @RequestParam(required = false) Long tenantId,
+                                       @RequestParam(required = false) Long projectId) {
         return R.ok(datasetService.list(tenantId, projectId, page, size));
     }
 
     @PostMapping("/upload")
-    public R<Dataset> upload(@RequestParam String tenantId,
-                             @RequestParam String projectId,
+    public R<Dataset> upload(@RequestParam Long tenantId,
+                             @RequestParam Long projectId,
                              @RequestParam String name,
                              @RequestParam(required = false) String description,
                              @RequestParam("file") MultipartFile file) {
@@ -57,26 +57,26 @@ public class DatasetController {
     }
 
     @GetMapping("/{id}/preview")
-    public R<PageResult<Map<String, String>>> preview(@PathVariable String id,
+    public R<PageResult<Map<String, String>>> preview(@PathVariable Long id,
                                                        @RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "20") int size) {
         return R.ok(datasetService.preview(id, page, size));
     }
 
     @GetMapping("/{id}/stats")
-    public R<List<DatasetStat>> stats(@PathVariable String id,
+    public R<List<DatasetStat>> stats(@PathVariable Long id,
                                       @RequestParam(required = false) Integer version) {
         return R.ok(datasetStatsService.getStats(id, version));
     }
 
     @PostMapping("/{id}/stats/compute")
-    public R<List<DatasetStat>> computeStats(@PathVariable String id,
+    public R<List<DatasetStat>> computeStats(@PathVariable Long id,
                                               @RequestParam(defaultValue = "1") int version) {
         return R.ok(datasetStatsService.computeStats(id, version));
     }
 
     @GetMapping("/{id}/versions")
-    public R<List<DatasetVersion>> listVersions(@PathVariable String id) {
+    public R<List<DatasetVersion>> listVersions(@PathVariable Long id) {
         return R.ok(datasetService.listVersions(id));
     }
 }

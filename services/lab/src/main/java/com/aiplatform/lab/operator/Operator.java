@@ -13,5 +13,8 @@ public class Operator extends BaseEntity {
     private String type;
     private String category;
     private String description;
-    private String config;
+    private String paramsSchemaJson;
+    private String code;
+    private Integer version;
+    private Boolean isShared;
 }

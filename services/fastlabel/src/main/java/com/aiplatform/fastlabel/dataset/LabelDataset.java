@@ -10,6 +10,8 @@ import lombok.EqualsAndHashCode;
 @TableName("label_datasets")
 public class LabelDataset extends BaseEntity {
 
+    private Long tenantId;
+    private Long projectId;
     private String name;
     private String description;
     private String type;

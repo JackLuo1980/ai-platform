@@ -9,10 +9,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("dataset_versions")
 public class DatasetVersion extends BaseEntity {
-    private String datasetId;
+    private Long datasetId;
     private Integer version;
     private String storagePath;
-    private Long rowCount;
-    private Long fileSize;
-    private String schema;
+    private String changeLog;
 }

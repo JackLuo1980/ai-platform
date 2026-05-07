@@ -16,7 +16,8 @@ public class LabelTaskController {
     private final LabelTaskService taskService;
 
     @PostMapping
-    public R<LabelTask> create(@RequestBody LabelTask task) {
+    public R<LabelTask> create(@RequestBody LabelTask task,
+            @RequestHeader(value = "X-Tenant-Id", required = false) Long tenantId) {
         return R.ok(taskService.create(task));
     }
 

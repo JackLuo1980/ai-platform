@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @TableName("feature_jobs")
 public class FeatureJob extends BaseEntity {
-    private String groupId;
-    private String type;
+    private Long groupId;
+    private String jobType;
     private String status;
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
+    private Long rowsProcessed;
+    private String errorMessage;
 }

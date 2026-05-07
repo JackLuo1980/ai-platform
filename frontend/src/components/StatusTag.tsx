@@ -1,22 +1,22 @@
 import { Tag } from 'antd';
 
 const STATUS_CONFIG: Record<string, { color: string; label: string }> = {
-  active: { color: 'green', label: 'Active' },
-  inactive: { color: 'default', label: 'Inactive' },
-  running: { color: 'processing', label: 'Running' },
-  stopped: { color: 'default', label: 'Stopped' },
-  pending: { color: 'warning', label: 'Pending' },
-  approved: { color: 'green', label: 'Approved' },
-  rejected: { color: 'error', label: 'Rejected' },
-  failed: { color: 'error', label: 'Failed' },
-  success: { color: 'green', label: 'Success' },
-  warning: { color: 'warning', label: 'Warning' },
-  deploying: { color: 'processing', label: 'Deploying' },
-  completed: { color: 'green', label: 'Completed' },
-  draft: { color: 'default', label: 'Draft' },
-  error: { color: 'error', label: 'Error' },
-  healthy: { color: 'green', label: 'Healthy' },
-  unhealthy: { color: 'error', label: 'Unhealthy' },
+  active: { color: 'green', label: '活跃' },
+  inactive: { color: 'default', label: '停用' },
+  running: { color: 'processing', label: '运行中' },
+  stopped: { color: 'default', label: '已停止' },
+  pending: { color: 'warning', label: '等待中' },
+  approved: { color: 'green', label: '已审批' },
+  rejected: { color: 'error', label: '已拒绝' },
+  failed: { color: 'error', label: '失败' },
+  success: { color: 'green', label: '成功' },
+  warning: { color: 'warning', label: '警告' },
+  deploying: { color: 'processing', label: '部署中' },
+  completed: { color: 'green', label: '已完成' },
+  draft: { color: 'default', label: '草稿' },
+  error: { color: 'error', label: '错误' },
+  healthy: { color: 'green', label: '健康' },
+  unhealthy: { color: 'error', label: '不健康' },
 };
 
 interface StatusTagProps {

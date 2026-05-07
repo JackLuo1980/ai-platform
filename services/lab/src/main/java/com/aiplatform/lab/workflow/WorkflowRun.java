@@ -11,9 +11,12 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @TableName("workflow_runs")
 public class WorkflowRun extends BaseEntity {
-    private String workflowId;
+    private Long workflowId;
     private String status;
-    private String result;
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
+    private String logPath;
+    private String paramsJson;
+    private String resultJson;
+    private String mlflowRunId;
 }

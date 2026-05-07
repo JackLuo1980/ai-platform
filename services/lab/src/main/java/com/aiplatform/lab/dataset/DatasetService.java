@@ -39,7 +39,7 @@ public class DatasetService {
         return datasetMapper.selectById(dataset.getId());
     }
 
-    public void delete(String id) {
+    public void delete(Long id) {
         Dataset ds = datasetMapper.selectById(id);
         if (ds != null && ds.getStoragePath() != null) {
             minioService.delete(ds.getStoragePath());
@@ -49,11 +49,11 @@ public class DatasetService {
                 .eq(DatasetVersion::getDatasetId, id));
     }
 
-    public Dataset getById(String id) {
+    public Dataset getById(Long id) {
         return datasetMapper.selectById(id);
     }
 
-    public PageResult<Dataset> list(String tenantId, String projectId, int page, int size) {
+    public PageResult<Dataset> list(Long tenantId, Long projectId, int page, int size) {
         LambdaQueryWrapper<Dataset> wrapper = new LambdaQueryWrapper<>();
         if (tenantId != null) wrapper.eq(Dataset::getTenantId, tenantId);
         if (projectId != null) wrapper.eq(Dataset::getProjectId, projectId);
@@ -62,7 +62,7 @@ public class DatasetService {
         return PageResult.of(result.getRecords(), result.getTotal(), page, size);
     }
 
-    public Dataset upload(String tenantId, String projectId, String name, String description, MultipartFile file) {
+    public Dataset upload(Long tenantId, Long projectId, String name, String description, MultipartFile file) {
         try {
             String originalName = file.getOriginalFilename();
             String extension = originalName != null && originalName.contains(".")
@@ -76,16 +76,15 @@ public class DatasetService {
             dataset.setProjectId(projectId);
             dataset.setName(name);
             dataset.setDescription(description);
-            dataset.setSourceType("UPLOAD");
-            dataset.setFileSize(file.getSize());
+            dataset.setSizeBytes(file.getSize());
             dataset.setStoragePath(storagePath);
+            dataset.setVersion(1);
 
             if (".csv".equalsIgnoreCase(extension)) {
                 detectCsvSchema(dataset, file);
             }
 
             datasetMapper.insert(dataset);
-
             createVersion(dataset);
 
             return dataset;
@@ -126,7 +125,7 @@ public class DatasetService {
                 }
             }
 
-            dataset.setSchema(schemaArray.toJSONString());
+            dataset.setSchemaJson(schemaArray.toJSONString());
             dataset.setRowCount(rowCount);
 
         } catch (Exception e) {
@@ -146,20 +145,18 @@ public class DatasetService {
     }
 
     private void createVersion(Dataset dataset) {
-        Long maxVersion = datasetVersionMapper.selectCount(
+        long count = datasetVersionMapper.selectCount(
                 new LambdaQueryWrapper<DatasetVersion>().eq(DatasetVersion::getDatasetId, dataset.getId()));
         DatasetVersion version = new DatasetVersion();
         version.setTenantId(dataset.getTenantId());
         version.setDatasetId(dataset.getId());
-        version.setVersion(maxVersion.intValue() + 1);
+        version.setVersion(dataset.getVersion() != null ? dataset.getVersion() : (int)(count + 1));
         version.setStoragePath(dataset.getStoragePath());
-        version.setRowCount(dataset.getRowCount());
-        version.setFileSize(dataset.getFileSize());
-        version.setSchema(dataset.getSchema());
+        version.setChangeLog("Initial version");
         datasetVersionMapper.insert(version);
     }
 
-    public PageResult<Map<String, String>> preview(String id, int page, int size) {
+    public PageResult<Map<String, String>> preview(Long id, int page, int size) {
         Dataset dataset = datasetMapper.selectById(id);
         if (dataset == null || dataset.getStoragePath() == null) {
             return PageResult.of(Collections.emptyList(), 0, page, size);
@@ -195,14 +192,14 @@ public class DatasetService {
         }
     }
 
-    public List<DatasetVersion> listVersions(String datasetId) {
+    public List<DatasetVersion> listVersions(Long datasetId) {
         return datasetVersionMapper.selectList(
                 new LambdaQueryWrapper<DatasetVersion>()
                         .eq(DatasetVersion::getDatasetId, datasetId)
                         .orderByDesc(DatasetVersion::getVersion));
     }
 
-    public DatasetVersion getVersion(String datasetId, Integer version) {
+    public DatasetVersion getVersion(Long datasetId, Integer version) {
         return datasetVersionMapper.selectOne(
                 new LambdaQueryWrapper<DatasetVersion>()
                         .eq(DatasetVersion::getDatasetId, datasetId)

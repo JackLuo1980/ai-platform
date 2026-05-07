@@ -9,12 +9,15 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("model_archives")
 public class ModelArchive extends BaseEntity {
+    private Long projectId;
     private String name;
-    private String version;
-    private String source;
-    private String sourceId;
-    private String description;
-    private String status;
-    private String metrics;
-    private String framework;
+    private String format;
+    private String artifactUri;
+    private String runtimeImage;
+    private String featureSchemaJson;
+    private String evaluationSummaryJson;
+    private String approvalStatus;
+    private String sourceType;
+    private Long sourceExperimentId;
+    private Integer deleted;
 }

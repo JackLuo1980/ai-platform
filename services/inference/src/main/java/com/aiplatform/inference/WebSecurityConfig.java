@@ -1,4 +1,4 @@
-package com.aiplatform.scorecard;
+package com.aiplatform.inference;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

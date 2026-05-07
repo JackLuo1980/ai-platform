@@ -1,142 +1,21 @@
 services:
-  postgresql:
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: aiplatform
-      POSTGRES_USER: aiplatform
-      POSTGRES_PASSWORD: AiPlatform2026Pg!
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    mem_limit: 512m
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aiplatform"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    mem_limit: 256m
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  minio:
-    image: minio/minio:latest
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: aiplatform
-      MINIO_ROOT_PASSWORD: AiPlatform2026Minio!
-    volumes:
-      - miniodata:/data
-    mem_limit: 512m
-    restart: unless-stopped
-    command: server /data --console-address ":9001"
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  nats:
-    image: nats:2-alpine
-    ports:
-      - "4222:4222"
-    mem_limit: 256m
-    restart: unless-stopped
-    command: --jetstream
-
-  gateway:
-    image: eclipse-temurin:21-jre-alpine
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-    volumes:
-      - ../../services/gateway/build/libs/gateway.jar:/app/app.jar:ro
-    mem_limit: 2g
-    restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: ["java", "-jar", "/app/app.jar"]
-
-  console:
-    image: eclipse-temurin:21-jre-alpine
-    ports:
-      - "8081:8081"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/aiplatform
-      - SPRING_DATASOURCE_USERNAME=aiplatform
-      - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
-    volumes:
-      - ../../services/console/build/libs/console.jar:/app/app.jar:ro
-    mem_limit: 1536m
-    restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: ["java", "-jar", "/app/app.jar"]
-
-  operation:
-    image: eclipse-temurin:21-jre-alpine
-    ports:
-      - "8082:8082"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/aiplatform
-      - SPRING_DATASOURCE_USERNAME=aiplatform
-      - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
-    volumes:
-      - ../../services/operation/build/libs/operation.jar:/app/app.jar:ro
-    mem_limit: 2g
-    restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: ["java", "-jar", "/app/app.jar"]
-
   lab:
     image: eclipse-temurin:21-jre-alpine
     ports:
       - "8083:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/aiplatform
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
       - SPRING_DATASOURCE_USERNAME=aiplatform
       - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
-      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_HOST=10.0.0.1
       - SPRING_DATA_REDIS_PORT=6379
+      - NATS_URL=nats://10.0.0.1:4222
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
     volumes:
       - ../../services/lab/build/libs/lab.jar:/app/app.jar:ro
     mem_limit: 2g
     restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     command: ["java", "-jar", "/app/app.jar"]
 
   inference:
@@ -145,20 +24,16 @@ services:
       - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/aiplatform
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
       - SPRING_DATASOURCE_USERNAME=aiplatform
       - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
-      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_HOST=10.0.0.1
       - SPRING_DATA_REDIS_PORT=6379
+      - NATS_URL=nats://10.0.0.1:4222
     volumes:
       - ../../services/inference/build/libs/inference.jar:/app/app.jar:ro
     mem_limit: 1536m
     restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     command: ["java", "-jar", "/app/app.jar"]
 
   fastlabel:
@@ -167,38 +42,31 @@ services:
       - "8085:8085"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/aiplatform
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
       - SPRING_DATASOURCE_USERNAME=aiplatform
       - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
-      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_HOST=10.0.0.1
       - SPRING_DATA_REDIS_PORT=6379
+      - NATS_URL=nats://10.0.0.1:4222
     volumes:
       - ../../services/fastlabel/build/libs/fastlabel.jar:/app/app.jar:ro
     mem_limit: 1536m
     restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     command: ["java", "-jar", "/app/app.jar"]
 
   scorecard:
     image: eclipse-temurin:21-jre-alpine
     ports:
-      - "8086:8086"
+      - "8086:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/aiplatform
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
       - SPRING_DATASOURCE_USERNAME=aiplatform
       - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
     volumes:
       - ../../services/scorecard/build/libs/scorecard.jar:/app/app.jar:ro
     mem_limit: 512m
     restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
     command: ["java", "-jar", "/app/app.jar"]
 
   mlflow:
@@ -208,27 +76,8 @@ services:
     environment:
       - AWS_ACCESS_KEY_ID=aiplatform
       - AWS_SECRET_ACCESS_KEY=AiPlatform2026Minio!
-      - AWS_ENDPOINT_URL=http://minio:9000
-      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+      - AWS_ENDPOINT_URL=http://10.0.0.2:9000
+      - MLFLOW_S3_ENDPOINT_URL=http://10.0.0.2:9000
     mem_limit: 2g
     restart: unless-stopped
-    depends_on:
-      postgresql:
-        condition: service_healthy
-    command: ["sh", "-c", "pip install mlflow psycopg2-binary boto3 -q && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri postgresql://aiplatform:AiPlatform2026Pg!@postgresql:5432/mlflow --default-artifact-root s3://mlflow/artifacts"]
-
-  frontend:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ../../frontend/dist:/usr/share/nginx/html:ro
-    mem_limit: 128m
-    restart: unless-stopped
-    depends_on:
-      - gateway
-
-volumes:
-  pgdata:
-  miniodata:
+    command: ["sh", "-c", "pip install mlflow psycopg2-binary boto3 -q && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri postgresql://aiplatform:AiPlatform2026Pg!@10.0.0.2:5432/mlflow --default-artifact-root s3://mlflow/artifacts"]

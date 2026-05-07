@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("feature_definitions")
 public class FeatureDefinition extends BaseEntity {
-    private String groupId;
+    private Long groupId;
     private String name;
     private String dtype;
     private String description;

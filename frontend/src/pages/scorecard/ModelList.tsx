@@ -1,84 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Select, Input, InputNumber, message, Tag, Space, Descriptions } from 'antd';
+import { useState, useEffect } from 'react';
+import { Table, Button, Modal, Form, Input, InputNumber, Select, message, Tag, Space, Descriptions } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { getScModels, trainScModel, getScModelReport } from '@/services/scorecard';
+import { listScorecardModels, trainScorecardModel, getScModelReport, deleteScorecardModel } from '@/services/scorecard';
 
-const { Option } = Select;
-
-export default function ModelListPage() {
-  const [models, setModels] = useState([]);
+function ScorecardModelList() {
+  const [models, setModels] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [trainVisible, setTrainVisible] = useState(false);
   const [reportVisible, setReportVisible] = useState(false);
-  const [report, setReport] = useState<any>(null);
+  const [report, setReport] = useState<Record<string, unknown> | null>(null);
   const [trainForm] = Form.useForm();
 
   function fetchModels() {
     setLoading(true);
-    getScModels({ page, pageSize })
-      .then(function (res) {
-        setModels(res.data.data.items || []);
-        setTotal(res.data.data.total || 0);
+    listScorecardModels({ page, size: pageSize })
+      .then(function (res: any) {
+        const d = res?.data || res || {};
+        setModels(d.items || d.content || []);
+        setTotal(d.total || d.totalElements || 0);
       })
-      .catch(function () { message.error('Failed to load models'); })
+      .catch(function () { message.error('加载失败'); })
       .finally(function () { setLoading(false); });
   }
 
   useEffect(function () { fetchModels(); }, [page, pageSize]);
 
-  function handleTrain(values: any) {
-    trainScModel(values)
+  function handleTrain(values: Record<string, unknown>) {
+    trainScorecardModel(values.modelId as string)
       .then(function () {
-        message.success('Training started');
+        message.success('训练已启动');
         setTrainVisible(false);
         trainForm.resetFields();
         fetchModels();
       })
-      .catch(function () { message.error('Training failed'); });
+      .catch(function () { message.error('训练失败'); });
   }
 
   function handleViewReport(id: string) {
     getScModelReport(id)
-      .then(function (res) {
-        setReport(res.data.data);
+      .then(function (res: any) {
+        setReport(res?.data || res || null);
         setReportVisible(true);
       })
-      .catch(function () { message.error('Failed to load report'); });
+      .catch(function () { message.error('加载报告失败'); });
   }
 
+  function handleDelete(id: string) {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该模型吗？',
+      onOk: function () {
+        deleteScorecardModel(id)
+          .then(function () { message.success('已删除'); fetchModels(); })
+          .catch(function () { message.error('删除失败'); });
+      },
+    });
+  }
+
+  const STATUS_MAP: Record<string, { color: string; label: string }> = {
+    training: { color: 'orange', label: '训练中' },
+    completed: { color: 'green', label: '已完成' },
+    failed: { color: 'red', label: '失败' },
+  };
+
   const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Dataset', dataIndex: 'dataset', key: 'dataset' },
+    { title: '名称', dataIndex: 'name' },
+    { title: '数据集', dataIndex: 'datasetName' },
+    { title: '变量数', dataIndex: 'variableCount' },
+    { title: 'KS', dataIndex: 'ks', render: function (v: number) { return v?.toFixed(4) || '-'; } },
+    { title: 'AUC', dataIndex: 'auc', render: function (v: number) { return v?.toFixed(4) || '-'; } },
+    { title: 'Gini', dataIndex: 'gini', render: function (v: number) { return v?.toFixed(4) || '-'; } },
     {
-      title: 'Variables',
-      dataIndex: 'selectedVariables',
-      key: 'selectedVariables',
-      render: function (v: any) { return Array.isArray(v) ? v.length : v || 0; },
-    },
-    { title: 'KS', dataIndex: 'ks', key: 'ks', render: function (v: number) { return v?.toFixed(4) || '-'; } },
-    { title: 'AUC', dataIndex: 'auc', key: 'auc', render: function (v: number) { return v?.toFixed(4) || '-'; } },
-    { title: 'Gini', dataIndex: 'gini', key: 'gini', render: function (v: number) { return v?.toFixed(4) || '-'; } },
-    {
-      title: 'Status',
+      title: '状态',
       dataIndex: 'status',
-      key: 'status',
       render: function (status: string) {
-        const colors: Record<string, string> = { training: 'orange', completed: 'green', failed: 'red' };
-        return <Tag color={colors[status] || 'default'}>{status}</Tag>;
+        const cfg = STATUS_MAP[status] || { color: 'default', label: status };
+        return <Tag color={cfg.color}>{cfg.label}</Tag>;
       },
     },
     {
-      title: 'Actions',
-      key: 'actions',
-      render: function (_: any, record: any) {
+      title: '操作',
+      render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
             {record.status === 'completed' ? (
-              <Button size="small" onClick={function () { handleViewReport(record.id); }}>View Report</Button>
+              <Button size="small" onClick={function () { handleViewReport(record.id as string); }}>查看报告</Button>
             ) : null}
+            <Button size="small" danger onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -88,33 +99,20 @@ export default function ModelListPage() {
   return (
     <div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <h2>Scorecard Models</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={function () { setTrainVisible(true); }}>Train</Button>
+        <h2>评分卡模型</h2>
+        <Button type="primary" icon={<PlusOutlined />} onClick={function () { setTrainVisible(true); }}>训练</Button>
       </div>
-      <Table rowKey="id" columns={columns} dataSource={models} loading={loading} pagination={{ current: page, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p); setPageSize(ps); } }} />
-      <Modal title="Train Scorecard Model" open={trainVisible} onCancel={function () { setTrainVisible(false); }} onOk={function () { trainForm.submit(); }} width={600}>
+      <Table rowKey="id" columns={columns} dataSource={models} loading={loading} pagination={{ current: page + 1, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p - 1); setPageSize(ps); } }} />
+      <Modal title="训练评分卡模型" open={trainVisible} onCancel={function () { setTrainVisible(false); }} onOk={function () { trainForm.submit(); }} width={600}>
         <Form form={trainForm} layout="vertical" onFinish={handleTrain}>
-          <Form.Item name="name" label="Model Name" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="datasetId" label="Dataset" rules={[{ required: true }]}><Select placeholder="Select dataset"><Option value="">Select</Option></Select></Form.Item>
-          <Form.Item name="targetVariable" label="Target Variable" rules={[{ required: true }]}><Input placeholder="e.g. default_flag" /></Form.Item>
-          <Form.Item name="variables" label="Selected Variables" rules={[{ required: true }]}><Select mode="multiple" placeholder="Select variables"><Option value="">Select</Option></Select></Form.Item>
-          <Form.Item name="binningMethod" label="Binning Method" initialValue="chimerge">
-            <Select>
-              <Option value="equal_width">Equal Width</Option>
-              <Option value="equal_freq">Equal Frequency</Option>
-              <Option value="chimerge">ChiMerge</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="maxBins" label="Max Bins" initialValue={10}><InputNumber min={3} max={50} /></Form.Item>
+          <Form.Item name="modelId" label="模型" rules={[{ required: true }]}><Select placeholder="选择模型" /></Form.Item>
         </Form>
       </Modal>
-      <Modal title="Model Report" open={reportVisible} onCancel={function () { setReportVisible(false); }} footer={null} width={640}>
+      <Modal title="模型报告" open={reportVisible} onCancel={function () { setReportVisible(false); }} footer={null} width={640}>
         {report ? (
           <Descriptions bordered column={2}>
             {Object.entries(report).map(function (entry) {
-              const key = entry[0];
-              const val = entry[1];
-              return <Descriptions.Item key={key} label={key}>{typeof val === 'object' ? JSON.stringify(val) : String(val)}</Descriptions.Item>;
+              return <Descriptions.Item key={entry[0]} label={entry[0]}>{typeof entry[1] === 'object' ? JSON.stringify(entry[1]) : String(entry[1])}</Descriptions.Item>;
             })}
           </Descriptions>
         ) : null}
@@ -122,3 +120,5 @@ export default function ModelListPage() {
     </div>
   );
 }
+
+export default ScorecardModelList;

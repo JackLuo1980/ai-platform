@@ -37,7 +37,7 @@ public class FeatureStoreService {
         return featureGroupMapper.selectById(group.getId());
     }
 
-    public void deleteGroup(String id) {
+    public void deleteGroup(Long id) {
         featureGroupMapper.deleteById(id);
         featureDefinitionMapper.delete(new LambdaQueryWrapper<FeatureDefinition>()
                 .eq(FeatureDefinition::getGroupId, id));
@@ -46,11 +46,11 @@ public class FeatureStoreService {
         deleteOnlineValues(id);
     }
 
-    public FeatureGroup getGroup(String id) {
+    public FeatureGroup getGroup(Long id) {
         return featureGroupMapper.selectById(id);
     }
 
-    public PageResult<FeatureGroup> listGroups(String tenantId, int page, int size) {
+    public PageResult<FeatureGroup> listGroups(Long tenantId, int page, int size) {
         LambdaQueryWrapper<FeatureGroup> wrapper = new LambdaQueryWrapper<>();
         if (tenantId != null) wrapper.eq(FeatureGroup::getTenantId, tenantId);
         wrapper.orderByDesc(FeatureGroup::getCreatedAt);
@@ -58,7 +58,7 @@ public class FeatureStoreService {
         return PageResult.of(result.getRecords(), result.getTotal(), page, size);
     }
 
-    public List<FeatureDefinition> listDefinitions(String groupId) {
+    public List<FeatureDefinition> listDefinitions(Long groupId) {
         return featureDefinitionMapper.selectList(
                 new LambdaQueryWrapper<FeatureDefinition>()
                         .eq(FeatureDefinition::getGroupId, groupId)
@@ -70,7 +70,7 @@ public class FeatureStoreService {
         return definition;
     }
 
-    public Map<String, Object> pointInTimeQuery(String groupId, String entityKeyValue, LocalDateTime timestamp) {
+    public Map<String, Object> pointInTimeQuery(Long groupId, String entityKey, LocalDateTime timestamp) {
         FeatureGroup group = featureGroupMapper.selectById(groupId);
         if (group == null) return Collections.emptyMap();
 
@@ -79,129 +79,71 @@ public class FeatureStoreService {
                         .eq(FeatureDefinition::getGroupId, groupId));
 
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("entityKey", group.getEntityKey());
-        result.put("entityValue", entityKeyValue);
+        result.put("entityKeys", group.getEntityKeysJson());
+        result.put("entityValue", entityKey);
         result.put("timestamp", timestamp.toString());
 
         Map<String, Object> features = new LinkedHashMap<>();
         for (FeatureDefinition def : definitions) {
             LambdaQueryWrapper<FeatureValueOffline> wrapper = new LambdaQueryWrapper<FeatureValueOffline>()
                     .eq(FeatureValueOffline::getGroupId, groupId)
-                    .eq(FeatureValueOffline::getDefinitionId, def.getId())
-                    .eq(FeatureValueOffline::getEntityKeyValue, entityKeyValue)
-                    .le(FeatureValueOffline::getEventTime, timestamp)
-                    .orderByDesc(FeatureValueOffline::getEventTime)
+                    .eq(FeatureValueOffline::getEntityKey, entityKey)
+                    .le(FeatureValueOffline::getEventTimestamp, timestamp)
+                    .orderByDesc(FeatureValueOffline::getEventTimestamp)
                     .last("LIMIT 1");
             FeatureValueOffline val = featureValueOfflineMapper.selectOne(wrapper);
-            features.put(def.getName(), val != null ? val.getValue() : def.getDefaultValue());
+            features.put(def.getName(), val != null ? val.getFeatureJson() : def.getDefaultValue());
         }
         result.put("features", features);
 
         return result;
     }
 
-    public List<Map<String, Object>> batchPointInTimeQuery(String groupId, List<String> entityKeyValues,
+    public List<Map<String, Object>> batchPointInTimeQuery(Long groupId, List<String> entityKeys,
                                                            LocalDateTime timestamp) {
-        return entityKeyValues.stream()
+        return entityKeys.stream()
                 .map(ek -> pointInTimeQuery(groupId, ek, timestamp))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public FeatureJob triggerCompute(String groupId, String tenantId) {
+    public FeatureJob triggerCompute(Long groupId, Long tenantId) {
         FeatureJob job = new FeatureJob();
         job.setTenantId(tenantId);
         job.setGroupId(groupId);
-        job.setType("MANUAL");
+        job.setJobType("MANUAL");
         job.setStatus("RUNNING");
         job.setStartedAt(LocalDateTime.now());
         featureJobMapper.insert(job);
-
-        try {
-            List<FeatureDefinition> definitions = featureDefinitionMapper.selectList(
-                    new LambdaQueryWrapper<FeatureDefinition>()
-                            .eq(FeatureDefinition::getGroupId, groupId));
-
-            for (FeatureDefinition def : definitions) {
-                computeFeatureValues(groupId, def, tenantId);
-            }
-
-            job.setStatus("SUCCESS");
-        } catch (Exception e) {
-            job.setStatus("FAILED");
-            log.error("Feature compute failed for group {}: {}", groupId, e.getMessage());
-        }
-
-        job.setFinishedAt(LocalDateTime.now());
         featureJobMapper.updateById(job);
         return job;
     }
 
-    private void computeFeatureValues(String groupId, FeatureDefinition def, String tenantId) {
-        List<FeatureValueOffline> existing = featureValueOfflineMapper.selectList(
-                new LambdaQueryWrapper<FeatureValueOffline>()
-                        .eq(FeatureValueOffline::getGroupId, groupId)
-                        .eq(FeatureValueOffline::getDefinitionId, def.getId()));
-
-        for (FeatureValueOffline val : existing) {
-            syncToOnline(tenantId, groupId, def.getId(), val.getEntityKeyValue(), val.getValue());
-        }
-    }
-
-    public void syncToOnline(String tenantId, String groupId, String definitionId,
-                             String entityKeyValue, String value) {
-        String redisKey = buildRedisKey(tenantId, groupId, entityKeyValue);
-        String field = definitionId;
-        redisTemplate.opsForHash().put(redisKey, field, value);
-        redisTemplate.expire(redisKey, 7, TimeUnit.DAYS);
-
-        FeatureValueOnline online = new FeatureValueOnline();
-        online.setTenantId(tenantId);
-        online.setGroupId(groupId);
-        online.setDefinitionId(definitionId);
-        online.setEntityKeyValue(entityKeyValue);
-        online.setValue(value);
-        online.setUpdatedAt(LocalDateTime.now());
-        featureValueOnlineMapper.insert(online);
-    }
-
-    public Map<String, String> getFromOnline(String tenantId, String groupId, String entityKeyValue) {
-        String redisKey = buildRedisKey(tenantId, groupId, entityKeyValue);
+    public Map<String, String> getFromOnline(Long tenantId, Long groupId, String entityKey) {
+        String redisKey = buildRedisKey(String.valueOf(tenantId), String.valueOf(groupId), entityKey);
         Map<Object, Object> entries = redisTemplate.opsForHash().entries(redisKey);
         Map<String, String> result = new LinkedHashMap<>();
         entries.forEach((k, v) -> result.put(k.toString(), v != null ? v.toString() : null));
         return result;
     }
 
-    public void syncAllToOnline(String groupId, String tenantId) {
-        List<FeatureValueOffline> values = featureValueOfflineMapper.selectList(
-                new LambdaQueryWrapper<FeatureValueOffline>()
-                        .eq(FeatureValueOffline::getGroupId, groupId)
-                        .eq(FeatureValueOffline::getTenantId, tenantId));
-
-        for (FeatureValueOffline val : values) {
-            syncToOnline(tenantId, groupId, val.getDefinitionId(),
-                    val.getEntityKeyValue(), val.getValue());
-        }
-    }
-
-    private void deleteOnlineValues(String groupId) {
+    private void deleteOnlineValues(Long groupId) {
         List<FeatureValueOnline> online = featureValueOnlineMapper.selectList(
                 new LambdaQueryWrapper<FeatureValueOnline>()
                         .eq(FeatureValueOnline::getGroupId, groupId));
         for (FeatureValueOnline val : online) {
-            String key = buildRedisKey(val.getTenantId(), groupId, val.getEntityKeyValue());
-            redisTemplate.opsForHash().delete(key, val.getDefinitionId());
+            String key = buildRedisKey(String.valueOf(val.getGroupId()), String.valueOf(groupId), val.getEntityKey());
+            redisTemplate.opsForHash().delete(key);
         }
         featureValueOnlineMapper.delete(new LambdaQueryWrapper<FeatureValueOnline>()
                 .eq(FeatureValueOnline::getGroupId, groupId));
     }
 
-    private String buildRedisKey(String tenantId, String groupId, String entityKeyValue) {
-        return "feature:" + tenantId + ":" + groupId + ":" + entityKeyValue;
+    private String buildRedisKey(String tenantId, String groupId, String entityKey) {
+        return "feature:" + tenantId + ":" + groupId + ":" + entityKey;
     }
 
-    public PageResult<FeatureJob> listJobs(String groupId, String tenantId, int page, int size) {
+    public PageResult<FeatureJob> listJobs(Long groupId, Long tenantId, int page, int size) {
         LambdaQueryWrapper<FeatureJob> wrapper = new LambdaQueryWrapper<>();
         if (groupId != null) wrapper.eq(FeatureJob::getGroupId, groupId);
         if (tenantId != null) wrapper.eq(FeatureJob::getTenantId, tenantId);
@@ -210,19 +152,21 @@ public class FeatureStoreService {
         return PageResult.of(result.getRecords(), result.getTotal(), page, size);
     }
 
-    public void saveOfflineValues(String tenantId, String groupId, String definitionId,
+    public void saveOfflineValues(Long tenantId, Long groupId,
                                   List<Map<String, String>> values) {
         for (Map<String, String> entry : values) {
             FeatureValueOffline offline = new FeatureValueOffline();
-            offline.setTenantId(tenantId);
             offline.setGroupId(groupId);
-            offline.setDefinitionId(definitionId);
-            offline.setEntityKeyValue(entry.get("entityKey"));
-            offline.setValue(entry.get("value"));
-            offline.setEventTime(entry.containsKey("eventTime")
-                    ? LocalDateTime.parse(entry.get("eventTime")) : LocalDateTime.now());
+            offline.setEntityKey(entry.get("entityKey"));
+            offline.setFeatureJson(entry.get("featureJson"));
+            offline.setEventTimestamp(entry.containsKey("eventTimestamp")
+                    ? LocalDateTime.parse(entry.get("eventTimestamp")) : LocalDateTime.now());
             offline.setCreatedAt(LocalDateTime.now());
             featureValueOfflineMapper.insert(offline);
         }
+    }
+
+    public List<FeatureDefinition> listAllDefinitions() {
+        return featureDefinitionMapper.selectList(null);
     }
 }

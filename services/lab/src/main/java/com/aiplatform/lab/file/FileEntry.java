@@ -9,10 +9,16 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("file_entries")
 public class FileEntry extends BaseEntity {
-    private String projectId;
-    private String path;
+    private Long projectId;
+    private Long userId;
+    private Long parentId;
     private String name;
-    private Boolean isDirectory;
-    private Long fileSize;
-    private String storagePath;
+    private String path;
+    private String type;
+    private String mimeType;
+    private Long sizeBytes;
+    private String storageKey;
+    private String checksum;
+    private String metadataJson;
+    private String status;
 }

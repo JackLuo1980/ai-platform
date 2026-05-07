@@ -21,38 +21,38 @@ public class OperatorController {
     }
 
     @PutMapping("/{id}")
-    public R<Operator> update(@PathVariable String id, @RequestBody Operator operator) {
+    public R<Operator> update(@PathVariable Long id, @RequestBody Operator operator) {
         operator.setId(id);
         return R.ok(operatorService.update(operator));
     }
 
     @DeleteMapping("/{id}")
-    public R<Void> delete(@PathVariable String id) {
+    public R<Void> delete(@PathVariable Long id) {
         operatorService.delete(id);
         return R.ok();
     }
 
     @GetMapping("/{id}")
-    public R<Operator> get(@PathVariable String id) {
+    public R<Operator> get(@PathVariable Long id) {
         return R.ok(operatorService.getById(id));
     }
 
     @GetMapping
     public R<PageResult<Operator>> list(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "20") int size,
-                                        @RequestParam(required = false) String tenantId,
+                                        @RequestParam(required = false) Long tenantId,
                                         @RequestParam(required = false) String category,
                                         @RequestParam(required = false) String type) {
         return R.ok(operatorService.list(tenantId, category, type, page, size));
     }
 
     @PostMapping("/{id}/test")
-    public R<Map<String, Object>> test(@PathVariable String id, @RequestBody Map<String, Object> params) {
+    public R<Map<String, Object>> test(@PathVariable Long id, @RequestBody Map<String, Object> params) {
         return R.ok(operatorService.test(id, params));
     }
 
     @GetMapping("/{id}/versions")
-    public R<List<OperatorVersion>> listVersions(@PathVariable String id) {
+    public R<List<OperatorVersion>> listVersions(@PathVariable Long id) {
         return R.ok(operatorService.listVersions(id));
     }
 

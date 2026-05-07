@@ -66,7 +66,7 @@ public class OperatorService {
         if ("PRESET".equals(operator.getType())) {
             JSONObject preset = PRESET_OPERATORS.get(operator.getName().toLowerCase());
             if (preset != null) {
-                operator.setConfig(preset.toJSONString());
+                operator.setParamsSchemaJson(preset.toJSONString());
                 operator.setCategory(preset.getString("category"));
                 operator.setDescription(preset.getString("description"));
             }
@@ -82,17 +82,17 @@ public class OperatorService {
         return operatorMapper.selectById(operator.getId());
     }
 
-    public void delete(String id) {
+    public void delete(Long id) {
         operatorMapper.deleteById(id);
         operatorVersionMapper.delete(new LambdaQueryWrapper<OperatorVersion>()
                 .eq(OperatorVersion::getOperatorId, id));
     }
 
-    public Operator getById(String id) {
+    public Operator getById(Long id) {
         return operatorMapper.selectById(id);
     }
 
-    public PageResult<Operator> list(String tenantId, String category, String type, int page, int size) {
+    public PageResult<Operator> list(Long tenantId, String category, String type, int page, int size) {
         LambdaQueryWrapper<Operator> wrapper = new LambdaQueryWrapper<>();
         if (tenantId != null) wrapper.eq(Operator::getTenantId, tenantId);
         if (category != null) wrapper.eq(Operator::getCategory, category);
@@ -102,14 +102,14 @@ public class OperatorService {
         return PageResult.of(result.getRecords(), result.getTotal(), page, size);
     }
 
-    public List<OperatorVersion> listVersions(String operatorId) {
+    public List<OperatorVersion> listVersions(Long operatorId) {
         return operatorVersionMapper.selectList(
                 new LambdaQueryWrapper<OperatorVersion>()
                         .eq(OperatorVersion::getOperatorId, operatorId)
                         .orderByDesc(OperatorVersion::getVersion));
     }
 
-    public Map<String, Object> test(String id, Map<String, Object> testParams) {
+    public Map<String, Object> test(Long id, Map<String, Object> testParams) {
         Operator op = operatorMapper.selectById(id);
         if (op == null) {
             return Map.of("success", false, "message", "Operator not found");
@@ -126,7 +126,8 @@ public class OperatorService {
         v.setTenantId(operator.getTenantId());
         v.setOperatorId(operator.getId());
         v.setVersion(count.intValue() + 1);
-        v.setConfig(operator.getConfig());
+        v.setCode(operator.getCode());
+        v.setParamsSchemaJson(operator.getParamsSchemaJson());
         operatorVersionMapper.insert(v);
     }
 

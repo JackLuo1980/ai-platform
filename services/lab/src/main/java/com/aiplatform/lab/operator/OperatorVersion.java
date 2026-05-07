@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("operator_versions")
 public class OperatorVersion extends BaseEntity {
-    private String operatorId;
+    private Long operatorId;
     private Integer version;
     private String code;
-    private String config;
+    private String paramsSchemaJson;
 }

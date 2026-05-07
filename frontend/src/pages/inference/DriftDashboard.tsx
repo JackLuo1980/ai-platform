@@ -1,69 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Table, Card, Row, Col, message } from 'antd';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { getDriftReports, getDriftTrend } from '@/services/inference';
+import { listDriftReports } from '@/services/inference';
 
-export default function DriftDashboardPage() {
-  const [trendData, setTrendData] = useState([]);
-  const [reports, setReports] = useState([]);
+function DriftDashboard() {
+  const [reports, setReports] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
-  const [threshold] = useState(0.5);
-
-  function fetchTrend() {
-    getDriftTrend({})
-      .then(function (res) { setTrendData(res.data.data || []); })
-      .catch(function () { message.error('Failed to load drift trend'); });
-  }
 
   function fetchReports() {
     setLoading(true);
-    getDriftReports({ page, pageSize })
-      .then(function (res) {
-        setReports(res.data.data.items || []);
-        setTotal(res.data.data.total || 0);
+    listDriftReports({ page, size: pageSize })
+      .then(function (res: any) {
+        const d = res?.data || res || {};
+        setReports(d.items || d.content || []);
+        setTotal(d.total || d.totalElements || 0);
       })
-      .catch(function () { message.error('Failed to load drift reports'); })
+      .catch(function () { message.error('加载失败'); })
       .finally(function () { setLoading(false); });
   }
 
-  useEffect(function () { fetchTrend(); fetchReports(); }, [page, pageSize]);
+  useEffect(function () { fetchReports(); }, [page, pageSize]);
 
   const reportColumns = [
-    { title: 'Drift Type', dataIndex: 'driftType', key: 'driftType' },
-    { title: 'Score', dataIndex: 'score', key: 'score', render: function (v: number) { return v?.toFixed(4); } },
-    { title: 'Feature', dataIndex: 'feature', key: 'feature' },
-    { title: 'Detected At', dataIndex: 'detectedAt', key: 'detectedAt' },
+    { title: '漂移类型', dataIndex: 'driftType' },
+    { title: '分数', dataIndex: 'score', render: function (v: number) { return v?.toFixed(4); } },
+    { title: '特征', dataIndex: 'feature' },
+    { title: '检测时间', dataIndex: 'detectedAt' },
   ];
 
   return (
     <div>
-      <h2>Data Drift Dashboard</h2>
+      <h2>数据漂移监控</h2>
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Drift Score Trend">
-            <ResponsiveContainer width="100%" height={320}>
-              <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis domain={[0, 1]} />
-                <Tooltip />
-                <ReferenceLine y={threshold} stroke="#ff4d4f" strokeDasharray="5 5" label="Threshold" />
-                <Line type="monotone" dataKey="score" stroke="#1890ff" dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </Card>
-        </Col>
-        <Col span={24}>
-          <Card title="Recent Drift Reports">
+          <Card title="漂移报告">
             <Table
               rowKey="id"
               columns={reportColumns}
               dataSource={reports}
               loading={loading}
-              pagination={{ current: page, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p); setPageSize(ps); } }}
+              pagination={{ current: page + 1, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p - 1); setPageSize(ps); } }}
             />
           </Card>
         </Col>
@@ -71,3 +49,5 @@ export default function DriftDashboardPage() {
     </div>
   );
 }
+
+export default DriftDashboard;

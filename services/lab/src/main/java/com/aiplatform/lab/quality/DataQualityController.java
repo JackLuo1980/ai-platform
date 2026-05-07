@@ -15,7 +15,7 @@ public class DataQualityController {
 
     @PostMapping("/validate")
     public R<Map<String, Object>> validate(@RequestBody Map<String, Object> body) {
-        String datasetId = (String) body.get("datasetId");
+        Long datasetId = Long.parseLong(body.get("datasetId").toString());
         int version = body.containsKey("version") ? ((Number) body.get("version")).intValue() : 1;
         @SuppressWarnings("unchecked")
         Map<String, Object> rules = (Map<String, Object>) body.getOrDefault("rules", Map.of());
@@ -23,7 +23,7 @@ public class DataQualityController {
     }
 
     @GetMapping("/score")
-    public R<Map<String, Object>> score(@RequestParam String datasetId,
+    public R<Map<String, Object>> score(@RequestParam Long datasetId,
                                         @RequestParam(defaultValue = "1") int version) {
         return R.ok(dataQualityService.score(datasetId, version));
     }

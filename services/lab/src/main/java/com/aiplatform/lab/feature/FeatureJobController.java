@@ -15,8 +15,8 @@ public class FeatureJobController {
     @GetMapping
     public R<PageResult<FeatureJob>> list(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "20") int size,
-                                          @RequestParam(required = false) String groupId,
-                                          @RequestParam(required = false) String tenantId) {
+                                          @RequestParam(required = false) Long groupId,
+                                          @RequestParam(required = false) Long tenantId) {
         return R.ok(featureStoreService.listJobs(groupId, tenantId, page, size));
     }
 }

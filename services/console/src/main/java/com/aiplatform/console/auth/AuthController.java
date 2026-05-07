@@ -23,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public R<LoginResponse> refresh(@RequestParam String refreshToken) {
-        return authService.refresh(refreshToken);
+    public R<LoginResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        return authService.refresh(request.getRefreshToken());
     }
 }

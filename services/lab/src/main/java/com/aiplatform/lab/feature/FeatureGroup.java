@@ -9,8 +9,11 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("feature_groups")
 public class FeatureGroup extends BaseEntity {
+    private Long projectId;
     private String name;
     private String description;
-    private String entityKey;
-    private String schedule;
+    private String entityKeysJson;
+    private String featuresJson;
+    private String scheduleJson;
+    private String status;
 }

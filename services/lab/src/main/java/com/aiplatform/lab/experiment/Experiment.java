@@ -9,8 +9,11 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("experiments")
 public class Experiment extends BaseEntity {
-    private String projectId;
+    private Long projectId;
     private String name;
+    private Long workflowRunId;
     private String mlflowExperimentId;
-    private String description;
+    private String status;
+    private String paramsJson;
+    private String metricsJson;
 }

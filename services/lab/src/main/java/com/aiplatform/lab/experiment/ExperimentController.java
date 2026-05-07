@@ -17,18 +17,18 @@ public class ExperimentController {
     @GetMapping
     public R<PageResult<Experiment>> list(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "20") int size,
-                                          @RequestParam(required = false) String tenantId,
-                                          @RequestParam(required = false) String projectId) {
+                                          @RequestParam(required = false) Long tenantId,
+                                          @RequestParam(required = false) Long projectId) {
         return R.ok(experimentService.list(tenantId, projectId, page, size));
     }
 
     @GetMapping("/{id}")
-    public R<Map<String, Object>> getDetail(@PathVariable String id) {
+    public R<Map<String, Object>> getDetail(@PathVariable Long id) {
         return R.ok(experimentService.getDetail(id));
     }
 
     @GetMapping("/{id}/metrics")
-    public R<Map<String, Object>> getMetrics(@PathVariable String id) {
+    public R<Map<String, Object>> getMetrics(@PathVariable Long id) {
         return R.ok(experimentService.getMetrics(id));
     }
 
@@ -38,7 +38,7 @@ public class ExperimentController {
     }
 
     @PostMapping("/{id}/runs")
-    public R<String> createRun(@PathVariable String id,
+    public R<String> createRun(@PathVariable Long id,
                                @RequestBody Map<String, Object> body) {
         String runName = (String) body.getOrDefault("runName", "run-" + System.currentTimeMillis());
         @SuppressWarnings("unchecked")

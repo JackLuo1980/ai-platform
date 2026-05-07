@@ -9,8 +9,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("workflows")
 public class Workflow extends BaseEntity {
-    private String projectId;
+    private Long projectId;
     private String name;
-    private String description;
-    private String dagJson;
+    private String type;
+    private String nodesJson;
+    private String edgesJson;
+    private String status;
 }

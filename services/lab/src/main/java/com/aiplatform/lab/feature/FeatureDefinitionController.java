@@ -14,12 +14,12 @@ public class FeatureDefinitionController {
     private final FeatureStoreService featureStoreService;
 
     @GetMapping
-    public R<List<FeatureDefinition>> list(@PathVariable String groupId) {
+    public R<List<FeatureDefinition>> list(@PathVariable Long groupId) {
         return R.ok(featureStoreService.listDefinitions(groupId));
     }
 
     @PostMapping
-    public R<FeatureDefinition> add(@PathVariable String groupId, @RequestBody FeatureDefinition definition) {
+    public R<FeatureDefinition> add(@PathVariable Long groupId, @RequestBody FeatureDefinition definition) {
         definition.setGroupId(groupId);
         return R.ok(featureStoreService.addDefinition(definition));
     }

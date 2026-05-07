@@ -32,15 +32,15 @@ public class DataSourceService {
         return dataSourceMapper.selectById(dataSource.getId());
     }
 
-    public void delete(String id) {
+    public void delete(Long id) {
         dataSourceMapper.deleteById(id);
     }
 
-    public DataSource getById(String id) {
+    public DataSource getById(Long id) {
         return dataSourceMapper.selectById(id);
     }
 
-    public PageResult<DataSource> list(String tenantId, String type, int page, int size) {
+    public PageResult<DataSource> list(Long tenantId, String type, int page, int size) {
         LambdaQueryWrapper<DataSource> wrapper = new LambdaQueryWrapper<>();
         if (tenantId != null) wrapper.eq(DataSource::getTenantId, tenantId);
         if (type != null) wrapper.eq(DataSource::getType, type);
@@ -49,7 +49,7 @@ public class DataSourceService {
         return PageResult.of(result.getRecords(), result.getTotal(), page, size);
     }
 
-    public Map<String, Object> testConnection(String id) {
+    public Map<String, Object> testConnection(Long id) {
         DataSource ds = dataSourceMapper.selectById(id);
         if (ds == null) {
             return Map.of("success", false, "message", "Data source not found");
@@ -65,7 +65,7 @@ public class DataSourceService {
     }
 
     private Map<String, Object> testLocal(DataSource ds) {
-        JSONObject config = JSON.parseObject(ds.getConfig());
+        JSONObject config = JSON.parseObject(ds.getConfigJson());
         String path = config.getString("path");
         java.io.File file = new java.io.File(path);
         boolean exists = file.exists();
@@ -73,7 +73,7 @@ public class DataSourceService {
     }
 
     private Map<String, Object> testFtp(DataSource ds) {
-        JSONObject config = JSON.parseObject(ds.getConfig());
+        JSONObject config = JSON.parseObject(ds.getConfigJson());
         try {
             String host = config.getString("host");
             int port = config.containsKey("port") ? config.getIntValue("port") : 21;
@@ -90,7 +90,7 @@ public class DataSourceService {
     }
 
     private Map<String, Object> testS3(DataSource ds) {
-        JSONObject config = JSON.parseObject(ds.getConfig());
+        JSONObject config = JSON.parseObject(ds.getConfigJson());
         try {
             String endpoint = config.getString("endpoint");
             String accessKey = config.getString("accessKey");
@@ -108,7 +108,7 @@ public class DataSourceService {
     }
 
     private Map<String, Object> testHdfs(DataSource ds) {
-        JSONObject config = JSON.parseObject(ds.getConfig());
+        JSONObject config = JSON.parseObject(ds.getConfigJson());
         try {
             String uri = config.getString("uri");
             java.nio.file.Path hdfsPath = java.nio.file.Paths.get(uri);
@@ -119,7 +119,7 @@ public class DataSourceService {
     }
 
     private Map<String, Object> testJdbc(DataSource ds) {
-        JSONObject config = JSON.parseObject(ds.getConfig());
+        JSONObject config = JSON.parseObject(ds.getConfigJson());
         try {
             String url = config.getString("url");
             String user = config.getString("username");

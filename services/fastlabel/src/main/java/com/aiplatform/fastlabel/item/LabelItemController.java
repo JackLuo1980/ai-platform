@@ -14,6 +14,13 @@ public class LabelItemController {
 
     private final LabelItemService itemService;
 
+
+    @GetMapping
+    public R<List<LabelItem>> list(@RequestParam(required = false) Long taskId,
+                                   @RequestParam(required = false) String status) {
+        return R.ok(itemService.listItems(taskId, status));
+    }
+
     @GetMapping("/{id}")
     public R<Map<String, Object>> getById(@PathVariable Long id) {
         return R.ok(itemService.getItemDetail(id));

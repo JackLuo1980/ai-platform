@@ -147,4 +147,16 @@ public class InferenceModelService {
             throw new RuntimeException("Version creation failed: " + e.getMessage(), e);
         }
     }
+
+    public java.util.List<InferenceModel> listVersions(Long modelId) {
+        InferenceModel model = modelMapper.selectById(modelId);
+        if (model == null) {
+            throw new RuntimeException("Model not found");
+        }
+        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<InferenceModel> wrapper = 
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
+        wrapper.eq(InferenceModel::getName, model.getName())
+               .orderByDesc(InferenceModel::getCreatedAt);
+        return modelMapper.selectList(wrapper);
+    }
 }

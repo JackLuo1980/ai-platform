@@ -3,7 +3,6 @@ package com.aiplatform.console.message;
 import com.aiplatform.common.model.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import java.time.LocalDateTime;
 
 @TableName("messages")
 public class Message extends BaseEntity {
@@ -15,8 +14,6 @@ public class Message extends BaseEntity {
     private String content;
     private Boolean isRead;
     private String link;
-    private LocalDateTime createdAt;
-
     public Long getTenantId() {
         return tenantId;
     }
@@ -73,11 +70,4 @@ public class Message extends BaseEntity {
         this.link = link;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

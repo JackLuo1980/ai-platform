@@ -18,26 +18,26 @@ public class FeatureGroupController {
     }
 
     @PutMapping("/{id}")
-    public R<FeatureGroup> update(@PathVariable String id, @RequestBody FeatureGroup group) {
+    public R<FeatureGroup> update(@PathVariable Long id, @RequestBody FeatureGroup group) {
         group.setId(id);
         return R.ok(featureStoreService.updateGroup(group));
     }
 
     @DeleteMapping("/{id}")
-    public R<Void> delete(@PathVariable String id) {
+    public R<Void> delete(@PathVariable Long id) {
         featureStoreService.deleteGroup(id);
         return R.ok();
     }
 
     @GetMapping("/{id}")
-    public R<FeatureGroup> get(@PathVariable String id) {
+    public R<FeatureGroup> get(@PathVariable Long id) {
         return R.ok(featureStoreService.getGroup(id));
     }
 
     @GetMapping
     public R<PageResult<FeatureGroup>> list(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "20") int size,
-                                            @RequestParam(required = false) String tenantId) {
+                                            @RequestParam(required = false) Long tenantId) {
         return R.ok(featureStoreService.listGroups(tenantId, page, size));
     }
 }

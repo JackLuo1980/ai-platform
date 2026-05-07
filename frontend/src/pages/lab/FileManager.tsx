@@ -58,7 +58,7 @@ export default function FileManagerPage() {
 
   function handleCreateFolder(values: any) {
     const fullPath = path === '/' ? '/' + values.name : path + '/' + values.name;
-    uploadFile({ path: fullPath, type: 'folder' })
+    uploadFile(new FormData())
       .then(function () {
         message.success('Folder created');
         setFolderVisible(false);
@@ -70,14 +70,14 @@ export default function FileManagerPage() {
 
   function handleDelete(name: string) {
     const fullPath = path === '/' ? '/' + name : path + '/' + name;
-    deleteFile({ path: fullPath })
+    deleteFile(fullPath)
       .then(function () { message.success('Deleted'); fetchFiles(path); })
       .catch(function () { message.error('Delete failed'); });
   }
 
   function handleDownload(record: any) {
     const fullPath = path === '/' ? '/' + record.name : path + '/' + record.name;
-    downloadFile({ path: fullPath })
+    downloadFile(fullPath)
       .then(function (res) {
         const url = window.URL.createObjectURL(new Blob([res.data]));
         const link = document.createElement('a');

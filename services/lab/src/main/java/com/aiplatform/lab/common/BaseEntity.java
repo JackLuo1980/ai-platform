@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 
 @Data
 public abstract class BaseEntity {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String id;
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
-    private String tenantId;
+    private Long tenantId;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;

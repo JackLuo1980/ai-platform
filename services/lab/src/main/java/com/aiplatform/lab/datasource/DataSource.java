@@ -9,9 +9,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @TableName("data_sources")
 public class DataSource extends BaseEntity {
+    private Long projectId;
     private String name;
     private String type;
-    private String config;
-    private String description;
+    private String configJson;
     private String status;
 }

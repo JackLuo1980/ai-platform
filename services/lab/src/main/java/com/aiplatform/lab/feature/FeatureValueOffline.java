@@ -10,13 +10,12 @@ import java.time.LocalDateTime;
 @Data
 @TableName("feature_values_offline")
 public class FeatureValueOffline {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String id;
-    private String tenantId;
-    private String groupId;
-    private String definitionId;
-    private String entityKeyValue;
-    private String value;
-    private LocalDateTime eventTime;
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private Long groupId;
+    private String entityKey;
+    private String featureJson;
+    private LocalDateTime eventTimestamp;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

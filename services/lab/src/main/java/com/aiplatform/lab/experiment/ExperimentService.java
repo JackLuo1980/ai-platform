@@ -2,7 +2,6 @@ package com.aiplatform.lab.experiment;
 
 import com.aiplatform.lab.common.MlflowClient;
 import com.aiplatform.lab.common.PageResult;
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -29,11 +28,11 @@ public class ExperimentService {
         return experiment;
     }
 
-    public Experiment getById(String id) {
+    public Experiment getById(Long id) {
         return experimentMapper.selectById(id);
     }
 
-    public PageResult<Experiment> list(String tenantId, String projectId, int page, int size) {
+    public PageResult<Experiment> list(Long tenantId, Long projectId, int page, int size) {
         LambdaQueryWrapper<Experiment> wrapper = new LambdaQueryWrapper<>();
         if (tenantId != null) wrapper.eq(Experiment::getTenantId, tenantId);
         if (projectId != null) wrapper.eq(Experiment::getProjectId, projectId);
@@ -42,7 +41,7 @@ public class ExperimentService {
         return PageResult.of(result.getRecords(), result.getTotal(), page, size);
     }
 
-    public Map<String, Object> getDetail(String id) {
+    public Map<String, Object> getDetail(Long id) {
         Experiment exp = experimentMapper.selectById(id);
         if (exp == null) return null;
 
@@ -63,7 +62,7 @@ public class ExperimentService {
         return detail;
     }
 
-    public Map<String, Object> getMetrics(String id) {
+    public Map<String, Object> getMetrics(Long id) {
         Experiment exp = experimentMapper.selectById(id);
         if (exp == null) return null;
 
@@ -93,7 +92,7 @@ public class ExperimentService {
         return metrics;
     }
 
-    public String createRun(String experimentId, String runName, Map<String, String> params,
+    public String createRun(Long experimentId, String runName, Map<String, String> params,
                             Map<String, Double> metrics) {
         Experiment exp = experimentMapper.selectById(experimentId);
         if (exp == null || exp.getMlflowExperimentId() == null) {

@@ -16,7 +16,7 @@ public class FeatureValueController {
     private final FeatureStoreService featureStoreService;
 
     @PostMapping("/query")
-    public R<Map<String, Object>> pointInTimeQuery(@PathVariable String groupId,
+    public R<Map<String, Object>> pointInTimeQuery(@PathVariable Long groupId,
                                                     @RequestBody Map<String, Object> body) {
         String entityKey = (String) body.get("entityKey");
         String timestampStr = (String) body.getOrDefault("timestamp", LocalDateTime.now().toString());
@@ -25,7 +25,7 @@ public class FeatureValueController {
     }
 
     @PostMapping("/batch-query")
-    public R<List<Map<String, Object>>> batchPointInTimeQuery(@PathVariable String groupId,
+    public R<List<Map<String, Object>>> batchPointInTimeQuery(@PathVariable Long groupId,
                                                                @RequestBody Map<String, Object> body) {
         @SuppressWarnings("unchecked")
         List<String> entityKeys = (List<String>) body.get("entityKeys");
@@ -35,31 +35,23 @@ public class FeatureValueController {
     }
 
     @PostMapping("/compute")
-    public R<FeatureJob> triggerCompute(@PathVariable String groupId,
-                                         @RequestParam String tenantId) {
+    public R<FeatureJob> triggerCompute(@PathVariable Long groupId,
+                                         @RequestParam Long tenantId) {
         return R.ok(featureStoreService.triggerCompute(groupId, tenantId));
     }
 
-    @PostMapping("/sync-online")
-    public R<Void> syncToOnline(@PathVariable String groupId,
-                                @RequestParam String tenantId) {
-        featureStoreService.syncAllToOnline(groupId, tenantId);
-        return R.ok();
-    }
-
     @GetMapping("/online")
-    public R<Map<String, String>> getOnline(@PathVariable String groupId,
-                                             @RequestParam String tenantId,
+    public R<Map<String, String>> getOnline(@PathVariable Long groupId,
+                                             @RequestParam Long tenantId,
                                              @RequestParam String entityKey) {
         return R.ok(featureStoreService.getFromOnline(tenantId, groupId, entityKey));
     }
 
     @PostMapping("/offline")
-    public R<Void> saveOffline(@PathVariable String groupId,
-                               @RequestParam String tenantId,
-                               @RequestParam String definitionId,
+    public R<Void> saveOffline(@PathVariable Long groupId,
+                               @RequestParam Long tenantId,
                                @RequestBody List<Map<String, String>> values) {
-        featureStoreService.saveOfflineValues(tenantId, groupId, definitionId, values);
+        featureStoreService.saveOfflineValues(tenantId, groupId, values);
         return R.ok();
     }
 }

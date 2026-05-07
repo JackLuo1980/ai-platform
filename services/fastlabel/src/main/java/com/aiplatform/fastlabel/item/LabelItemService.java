@@ -174,4 +174,17 @@ public class LabelItemService {
             }
         }
     }
+
+    public List<LabelItem> listItems(Long taskId, String status) {
+        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<LabelItem> wrapper = 
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
+        if (taskId != null) {
+            wrapper.eq(LabelItem::getTaskId, taskId);
+        }
+        if (status != null && !status.isEmpty()) {
+            wrapper.eq(LabelItem::getStatus, status);
+        }
+        wrapper.orderByDesc(LabelItem::getCreatedAt);
+        return itemMapper.selectList(wrapper);
+    }
 }

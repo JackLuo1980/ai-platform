@@ -16,7 +16,10 @@ public class LabelDatasetController {
     private final LabelDatasetService datasetService;
 
     @PostMapping
-    public R<LabelDataset> create(@RequestBody LabelDataset dataset) {
+    public R<LabelDataset> create(@RequestBody LabelDataset dataset,
+            @RequestHeader(value = "X-Tenant-Id", required = false) Long tenantId,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+        if (tenantId != null) dataset.setTenantId(tenantId);
         return R.ok(datasetService.create(dataset));
     }
 

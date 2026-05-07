@@ -11,6 +11,12 @@ spring:
       enabled: false
     gateway:
       routes:
+        - id: auth-service
+          uri: http://console:8081
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=2
         - id: console-service
           uri: http://console:8081
           predicates:
@@ -26,27 +32,47 @@ spring:
         - id: lab-service
           uri: http://10.0.0.3:8083
           predicates:
-            - Path=/api/lab/**
+            - Path=/api/v1/lab/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
         - id: inference-service
           uri: http://10.0.0.3:8084
           predicates:
-            - Path=/api/inference/**
-          filters:
-            - StripPrefix=1
+            - Path=/api/v1/inference/**
         - id: fastlabel-service
           uri: http://10.0.0.3:8085
           predicates:
-            - Path=/api/fastlabel/**
+            - Path=/api/v1/fastlabel/**
+        - id: audit-logs-service
+          uri: http://console:8081
+          predicates:
+            - Path=/api/v1/audit-logs/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
+        - id: messages-service
+          uri: http://console:8081
+          predicates:
+            - Path=/api/v1/messages/**
+          filters:
+            - StripPrefix=2
+        - id: console-v1-service
+          uri: http://console:8081
+          predicates:
+            - Path=/api/v1/users/**,/api/v1/roles/**,/api/v1/tenants/**,/api/v1/projects/**
+          filters:
+            - StripPrefix=2
+        - id: resource-quotas-service
+          uri: http://operation:8082
+          predicates:
+            - Path=/api/v1/resource-quotas/**
+          filters:
+            - StripPrefix=2
         - id: scorecard-service
           uri: http://10.0.0.3:8086
           predicates:
-            - Path=/api/scorecard/**
+            - Path=/api/v1/scorecard/**
           filters:
-            - StripPrefix=1
+
 
 jwt:
   secret: AiPlatformJwtSecretKey2024ForProductionUseMustBe256Bits!!

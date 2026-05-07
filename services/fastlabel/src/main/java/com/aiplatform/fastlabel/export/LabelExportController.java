@@ -2,8 +2,10 @@ package com.aiplatform.fastlabel.export;
 
 import com.aiplatform.common.model.R;
 import lombok.RequiredArgsConstructor;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -12,6 +14,22 @@ import java.util.Map;
 public class LabelExportController {
 
     private final LabelExportService exportService;
+    private final LabelExportMapper exportMapper;
+
+
+    @GetMapping
+    public R<List<LabelExport>> list(@RequestParam(required = false) Long taskId,
+                                     @RequestParam(required = false) String status) {
+        LambdaQueryWrapper<LabelExport> wrapper = new LambdaQueryWrapper<>();
+        if (taskId != null) {
+            wrapper.eq(LabelExport::getTaskId, taskId);
+        }
+        if (status != null && !status.isEmpty()) {
+            wrapper.eq(LabelExport::getStatus, status);
+        }
+        wrapper.orderByDesc(LabelExport::getCreatedAt);
+        return R.ok(exportMapper.selectList(wrapper));
+    }
 
     @PostMapping
     public R<LabelExport> createExport(@RequestBody Map<String, Object> body) {

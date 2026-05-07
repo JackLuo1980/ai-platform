@@ -1,52 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Row, Col, Select, message } from 'antd';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { getServiceMetrics } from '@/services/inference';
+import { getMonitoringMetrics } from '@/services/inference';
 
-const { Option } = Select;
-
-export default function MonitoringDashboardPage() {
-  const [qpsData, setQpsData] = useState([]);
-  const [latencyData, setLatencyData] = useState([]);
-  const [errorData, setErrorData] = useState([]);
+function MonitoringDashboard() {
+  const [qpsData, setQpsData] = useState<Record<string, unknown>[]>([]);
+  const [latencyData, setLatencyData] = useState<Record<string, unknown>[]>([]);
+  const [errorData, setErrorData] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(false);
-  const [serviceId, setServiceId] = useState<string>('');
   const [timeRange, setTimeRange] = useState('1h');
 
   function fetchMetrics() {
     setLoading(true);
-    getServiceMetrics({ serviceId: serviceId, timeRange: timeRange })
-      .then(function (res) {
-        const data = res.data.data;
-        setQpsData(data.qps || []);
-        setLatencyData(data.latency || []);
-        setErrorData(data.errors || []);
+    getMonitoringMetrics({ timeRange })
+      .then(function (res: any) {
+        const d = res?.data || res || {};
+        setQpsData(d.qps || []);
+        setLatencyData(d.latency || []);
+        setErrorData(d.errors || []);
       })
-      .catch(function () { message.error('Failed to load metrics'); })
+      .catch(function () { message.error('加载监控数据失败'); })
       .finally(function () { setLoading(false); });
   }
 
-  useEffect(function () { fetchMetrics(); }, [serviceId, timeRange]);
+  useEffect(function () { fetchMetrics(); }, [timeRange]);
 
   return (
     <div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Monitoring Dashboard</h2>
+        <h2>监控仪表盘</h2>
         <div style={{ display: 'flex', gap: 12 }}>
-          <Select value={serviceId} onChange={setServiceId} style={{ width: 200 }} placeholder="Select service" allowClear>
-            <Option value="">All Services</Option>
-          </Select>
           <Select value={timeRange} onChange={setTimeRange} style={{ width: 120 }}>
-            <Option value="1h">1 Hour</Option>
-            <Option value="6h">6 Hours</Option>
-            <Option value="24h">24 Hours</Option>
-            <Option value="7d">7 Days</Option>
+            <Select.Option value="1h">1 小时</Select.Option>
+            <Select.Option value="6h">6 小时</Select.Option>
+            <Select.Option value="24h">24 小时</Select.Option>
+            <Select.Option value="7d">7 天</Select.Option>
           </Select>
         </div>
       </div>
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="QPS (Queries Per Second)" loading={loading}>
+          <Card title="QPS (每秒查询数)" loading={loading}>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={qpsData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -59,7 +53,7 @@ export default function MonitoringDashboardPage() {
           </Card>
         </Col>
         <Col span={24}>
-          <Card title="Average Latency (ms)" loading={loading}>
+          <Card title="平均延迟 (ms)" loading={loading}>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={latencyData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -72,7 +66,7 @@ export default function MonitoringDashboardPage() {
           </Card>
         </Col>
         <Col span={24}>
-          <Card title="Error Rate (%)" loading={loading}>
+          <Card title="错误率 (%)" loading={loading}>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={errorData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -88,3 +82,5 @@ export default function MonitoringDashboardPage() {
     </div>
   );
 }
+
+export default MonitoringDashboard;

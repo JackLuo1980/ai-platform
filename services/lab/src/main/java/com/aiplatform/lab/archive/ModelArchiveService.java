@@ -18,8 +18,8 @@ public class ModelArchiveService {
     private final ModelFileMapper modelFileMapper;
 
     public ModelArchive create(ModelArchive archive) {
-        if (archive.getStatus() == null) {
-            archive.setStatus("DRAFT");
+        if (archive.getApprovalStatus() == null) {
+            archive.setApprovalStatus("PENDING");
         }
         modelArchiveMapper.insert(archive);
         return archive;
@@ -30,94 +30,69 @@ public class ModelArchiveService {
         return modelArchiveMapper.selectById(archive.getId());
     }
 
-    public void delete(String id) {
+    public void delete(Long id) {
         modelArchiveMapper.deleteById(id);
         modelFileMapper.delete(new LambdaQueryWrapper<ModelFile>()
                 .eq(ModelFile::getArchiveId, id));
     }
 
-    public ModelArchive getById(String id) {
+    public ModelArchive getById(Long id) {
         return modelArchiveMapper.selectById(id);
     }
 
-    public PageResult<ModelArchive> list(String tenantId, String status, int page, int size) {
+    public PageResult<ModelArchive> list(Long tenantId, String approvalStatus, int page, int size) {
         LambdaQueryWrapper<ModelArchive> wrapper = new LambdaQueryWrapper<>();
         if (tenantId != null) wrapper.eq(ModelArchive::getTenantId, tenantId);
-        if (status != null) wrapper.eq(ModelArchive::getStatus, status);
+        if (approvalStatus != null) wrapper.eq(ModelArchive::getApprovalStatus, approvalStatus);
         wrapper.orderByDesc(ModelArchive::getCreatedAt);
         IPage<ModelArchive> result = modelArchiveMapper.selectPage(new Page<>(page, size), wrapper);
         return PageResult.of(result.getRecords(), result.getTotal(), page, size);
     }
 
     @Transactional
-    public ModelArchive archiveFromExperiment(String tenantId, String experimentRunId,
-                                              String name, String version, String framework,
-                                              String metricsJson, List<ModelFile> files) {
+    public ModelArchive archiveFromExperiment(Long tenantId, Long experimentRunId,
+                                              String name, String format, String runtimeImage,
+                                              String evaluationSummaryJson, List<ModelFile> files) {
         ModelArchive archive = new ModelArchive();
         archive.setTenantId(tenantId);
         archive.setName(name);
-        archive.setVersion(version);
-        archive.setSource("EXPERIMENT");
-        archive.setSourceId(experimentRunId);
-        archive.setFramework(framework);
-        archive.setMetrics(metricsJson);
-        archive.setStatus("DRAFT");
+        archive.setFormat(format);
+        archive.setRuntimeImage(runtimeImage);
+        archive.setSourceType("EXPERIMENT");
+        archive.setSourceExperimentId(experimentRunId);
+        archive.setEvaluationSummaryJson(evaluationSummaryJson);
+        archive.setApprovalStatus("PENDING");
+        archive.setDeleted(0);
         modelArchiveMapper.insert(archive);
 
         if (files != null) {
             for (ModelFile file : files) {
                 file.setTenantId(tenantId);
                 file.setArchiveId(archive.getId());
+                file.setDeleted(0);
                 modelFileMapper.insert(file);
             }
         }
-
         return archive;
     }
 
-    @Transactional
-    public ModelArchive importThirdParty(String tenantId, String name, String version,
-                                         String framework, String description,
-                                         String metricsJson, List<ModelFile> files) {
-        ModelArchive archive = new ModelArchive();
-        archive.setTenantId(tenantId);
-        archive.setName(name);
-        archive.setVersion(version);
-        archive.setSource("IMPORT");
-        archive.setFramework(framework);
-        archive.setDescription(description);
-        archive.setMetrics(metricsJson);
-        archive.setStatus("DRAFT");
-        modelArchiveMapper.insert(archive);
-
-        if (files != null) {
-            for (ModelFile file : files) {
-                file.setTenantId(tenantId);
-                file.setArchiveId(archive.getId());
-                modelFileMapper.insert(file);
-            }
-        }
-
-        return archive;
-    }
-
-    public ModelArchive submitApproval(String id) {
+    public ModelArchive submitApproval(Long id) {
         ModelArchive archive = modelArchiveMapper.selectById(id);
         if (archive == null) throw new RuntimeException("Model archive not found");
-        archive.setStatus("PENDING");
+        archive.setApprovalStatus("PENDING");
         modelArchiveMapper.updateById(archive);
         return archive;
     }
 
-    public ModelArchive approve(String id, boolean approved, String comment) {
+    public ModelArchive approve(Long id, boolean approved, String comment) {
         ModelArchive archive = modelArchiveMapper.selectById(id);
         if (archive == null) throw new RuntimeException("Model archive not found");
-        archive.setStatus(approved ? "APPROVED" : "REJECTED");
+        archive.setApprovalStatus(approved ? "APPROVED" : "REJECTED");
         modelArchiveMapper.updateById(archive);
         return archive;
     }
 
-    public List<ModelFile> listFiles(String archiveId) {
+    public List<ModelFile> listFiles(Long archiveId) {
         return modelFileMapper.selectList(
                 new LambdaQueryWrapper<ModelFile>()
                         .eq(ModelFile::getArchiveId, archiveId));

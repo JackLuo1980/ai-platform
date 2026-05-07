@@ -1,84 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Select, message, Tag, Space, Descriptions } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { getEvaluations, runEvaluation, getEvaluationReport } from '@/services/inference';
+import { listEvaluations, createEvaluation, getEvaluationReport } from '@/services/inference';
 
-const { Option } = Select;
-
-export default function EvaluationListPage() {
-  const [evaluations, setEvaluations] = useState([]);
+function EvaluationList() {
+  const [evaluations, setEvaluations] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [createVisible, setCreateVisible] = useState(false);
   const [reportVisible, setReportVisible] = useState(false);
-  const [report, setReport] = useState<any>(null);
+  const [report, setReport] = useState<Record<string, unknown> | null>(null);
   const [createForm] = Form.useForm();
 
   function fetchEvaluations() {
     setLoading(true);
-    getEvaluations({ page, pageSize })
-      .then(function (res) {
-        setEvaluations(res.data.data.items || []);
-        setTotal(res.data.data.total || 0);
+    listEvaluations({ page, size: pageSize })
+      .then(function (res: any) {
+        const d = res?.data || res || {};
+        setEvaluations(d.items || d.content || []);
+        setTotal(d.total || d.totalElements || 0);
       })
-      .catch(function () { message.error('Failed to load evaluations'); })
+      .catch(function () { message.error('加载失败'); })
       .finally(function () { setLoading(false); });
   }
 
   useEffect(function () { fetchEvaluations(); }, [page, pageSize]);
 
-  function handleCreate(values: any) {
-    runEvaluation(values)
+  function handleCreate(values: Record<string, unknown>) {
+    createEvaluation(values)
       .then(function () {
-        message.success('Evaluation started');
+        message.success('评估已启动');
         setCreateVisible(false);
         createForm.resetFields();
         fetchEvaluations();
       })
-      .catch(function () { message.error('Failed to start evaluation'); });
+      .catch(function () { message.error('启动失败'); });
   }
 
   function handleViewReport(id: string) {
     getEvaluationReport(id)
-      .then(function (res) {
-        setReport(res.data.data);
+      .then(function (res: any) {
+        setReport(res?.data || res || null);
         setReportVisible(true);
       })
-      .catch(function () { message.error('Failed to load report'); });
+      .catch(function () { message.error('加载报告失败'); });
   }
 
+  const STATUS_MAP: Record<string, { color: string; label: string }> = {
+    running: { color: 'orange', label: '运行中' },
+    completed: { color: 'green', label: '已完成' },
+    failed: { color: 'red', label: '失败' },
+    pending: { color: 'default', label: '等待中' },
+  };
+
   const columns = [
-    { title: 'Model', dataIndex: 'model', key: 'model' },
-    { title: 'Type', dataIndex: 'type', key: 'type' },
-    { title: 'Template', dataIndex: 'template', key: 'template' },
+    { title: '模型', dataIndex: 'modelName' },
+    { title: '类型', dataIndex: 'type' },
+    { title: '模板', dataIndex: 'templateName' },
+    { title: '指标摘要', dataIndex: 'metricsSummary', ellipsis: true },
     {
-      title: 'Metrics',
-      dataIndex: 'metricsSummary',
-      key: 'metricsSummary',
-      render: function (summary: any) {
-        if (!summary) return '-';
-        return JSON.stringify(summary);
-      },
-    },
-    {
-      title: 'Status',
+      title: '状态',
       dataIndex: 'status',
-      key: 'status',
       render: function (status: string) {
-        const colors: Record<string, string> = { running: 'orange', completed: 'green', failed: 'red', pending: 'default' };
-        return <Tag color={colors[status] || 'default'}>{status}</Tag>;
+        const cfg = STATUS_MAP[status] || { color: 'default', label: status };
+        return <Tag color={cfg.color}>{cfg.label}</Tag>;
       },
     },
     {
-      title: 'Actions',
-      key: 'actions',
-      render: function (_: any, record: any) {
+      title: '操作',
+      render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
             {record.status === 'completed' ? (
-              <Button size="small" onClick={function () { handleViewReport(record.id); }}>View Report</Button>
+              <Button size="small" onClick={function () { handleViewReport(record.id as string); }}>查看报告</Button>
             ) : null}
           </Space>
         );
@@ -89,24 +85,22 @@ export default function EvaluationListPage() {
   return (
     <div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <h2>Evaluations</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={function () { setCreateVisible(true); }}>Evaluate</Button>
+        <h2>模型评估</h2>
+        <Button type="primary" icon={<PlusOutlined />} onClick={function () { setCreateVisible(true); }}>新建评估</Button>
       </div>
-      <Table rowKey="id" columns={columns} dataSource={evaluations} loading={loading} pagination={{ current: page, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p); setPageSize(ps); } }} />
-      <Modal title="Run Evaluation" open={createVisible} onCancel={function () { setCreateVisible(false); }} onOk={function () { createForm.submit(); }}>
+      <Table rowKey="id" columns={columns} dataSource={evaluations} loading={loading} pagination={{ current: page + 1, pageSize: pageSize, total: total, onChange: function (p, ps) { setPage(p - 1); setPageSize(ps); } }} />
+      <Modal title="新建评估" open={createVisible} onCancel={function () { setCreateVisible(false); }} onOk={function () { createForm.submit(); }}>
         <Form form={createForm} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="modelId" label="Model" rules={[{ required: true }]}><Select placeholder="Select model"><Option value="">Select</Option></Select></Form.Item>
-          <Form.Item name="templateId" label="Evaluation Template" rules={[{ required: true }]}><Select placeholder="Select template"><Option value="">Select</Option></Select></Form.Item>
-          <Form.Item name="dataSource" label="Data Source" rules={[{ required: true }]}><Select placeholder="Select data source"><Option value="">Select</Option></Select></Form.Item>
+          <Form.Item name="modelId" label="模型" rules={[{ required: true }]}><Select placeholder="选择模型" /></Form.Item>
+          <Form.Item name="templateId" label="评估模板" rules={[{ required: true }]}><Select placeholder="选择模板" /></Form.Item>
+          <Form.Item name="dataSource" label="数据源" rules={[{ required: true }]}><Select placeholder="选择数据源" /></Form.Item>
         </Form>
       </Modal>
-      <Modal title="Evaluation Report" open={reportVisible} onCancel={function () { setReportVisible(false); }} footer={null} width={640}>
+      <Modal title="评估报告" open={reportVisible} onCancel={function () { setReportVisible(false); }} footer={null} width={640}>
         {report ? (
           <Descriptions bordered column={2}>
             {Object.entries(report).map(function (entry) {
-              const key = entry[0];
-              const val = entry[1];
-              return <Descriptions.Item key={key} label={key}>{typeof val === 'object' ? JSON.stringify(val) : String(val)}</Descriptions.Item>;
+              return <Descriptions.Item key={entry[0]} label={entry[0]}>{typeof entry[1] === 'object' ? JSON.stringify(entry[1]) : String(entry[1])}</Descriptions.Item>;
             })}
           </Descriptions>
         ) : null}
@@ -114,3 +108,5 @@ export default function EvaluationListPage() {
     </div>
   );
 }
+
+export default EvaluationList;
