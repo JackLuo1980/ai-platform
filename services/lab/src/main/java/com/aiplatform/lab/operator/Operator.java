@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_operator")
+@TableName("operators")
 public class Operator extends BaseEntity {
     private String name;
     private String type;

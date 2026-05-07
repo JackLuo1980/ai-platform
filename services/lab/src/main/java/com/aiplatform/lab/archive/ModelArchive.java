@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_model_archive")
+@TableName("model_archives")
 public class ModelArchive extends BaseEntity {
     private String name;
     private String version;

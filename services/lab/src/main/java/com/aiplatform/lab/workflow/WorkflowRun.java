@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_workflow_run")
+@TableName("workflow_runs")
 public class WorkflowRun extends BaseEntity {
     private String workflowId;
     private String status;

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_feature_group")
+@TableName("feature_groups")
 public class FeatureGroup extends BaseEntity {
     private String name;
     private String description;

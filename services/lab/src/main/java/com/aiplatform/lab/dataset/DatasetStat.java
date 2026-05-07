@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("lab_dataset_stat")
+@TableName("dataset_stats")
 public class DatasetStat {
     @TableId(type = IdType.ASSIGN_UUID)
     private String id;

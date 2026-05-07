@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("label_item")
+@TableName("label_items")
 public class LabelItem extends BaseEntity {
 
     private Long taskId;

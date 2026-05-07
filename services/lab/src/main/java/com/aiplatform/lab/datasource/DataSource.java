@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_data_source")
+@TableName("data_sources")
 public class DataSource extends BaseEntity {
     private String name;
     private String type;

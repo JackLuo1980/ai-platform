@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("marketplace_model")
+@TableName("marketplace_models")
 public class MarketplaceModel {
     @TableId(type = IdType.ASSIGN_UUID)
     private String id;

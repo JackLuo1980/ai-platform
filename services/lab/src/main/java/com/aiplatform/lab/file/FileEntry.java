@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_file_entry")
+@TableName("file_entries")
 public class FileEntry extends BaseEntity {
     private String projectId;
     private String path;

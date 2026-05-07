@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_dataset_version")
+@TableName("dataset_versions")
 public class DatasetVersion extends BaseEntity {
     private String datasetId;
     private Integer version;

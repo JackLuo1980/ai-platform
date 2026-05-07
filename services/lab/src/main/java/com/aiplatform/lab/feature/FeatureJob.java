@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_feature_job")
+@TableName("feature_jobs")
 public class FeatureJob extends BaseEntity {
     private String groupId;
     private String type;

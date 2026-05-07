@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_workflow")
+@TableName("workflows")
 public class Workflow extends BaseEntity {
     private String projectId;
     private String name;

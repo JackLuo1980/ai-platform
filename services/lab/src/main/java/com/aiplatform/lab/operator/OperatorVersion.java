@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("lab_operator_version")
+@TableName("operator_versions")
 public class OperatorVersion extends BaseEntity {
     private String operatorId;
     private Integer version;

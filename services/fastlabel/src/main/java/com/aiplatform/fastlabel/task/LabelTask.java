@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("label_task")
+@TableName("label_tasks")
 public class LabelTask extends BaseEntity {
 
     private Long datasetId;

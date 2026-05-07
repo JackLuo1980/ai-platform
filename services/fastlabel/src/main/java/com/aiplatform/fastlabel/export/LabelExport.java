@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("label_export")
+@TableName("label_exports")
 public class LabelExport extends BaseEntity {
 
     private Long taskId;

@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("lab_feature_value_offline")
+@TableName("feature_values_offline")
 public class FeatureValueOffline {
     @TableId(type = IdType.ASSIGN_UUID)
     private String id;
