@@ -175,8 +175,4 @@ public class LabelDatasetService {
                 || lower.endsWith(".ogg") || lower.endsWith(".m4a") || lower.endsWith(".aac")
                 || lower.endsWith(".wma") || lower.endsWith(".opus");
     }
-
-    private boolean isImageFile(String filename) {
-        return isImageFile(filename.toLowerCase());
-    }
 }
