@@ -167,3 +167,15 @@ export function runEvaluation(data: Record<string, unknown>) {
 export function getEvaluationReport(id: string) {
   return request.get(`/api/v1/inference/evaluation/${id}/report`);
 }
+
+export function executeBackflow(data: Record<string, unknown>) {
+  return request.post('/api/v1/inference/backflow/execute', data);
+}
+
+export function listBackflowTasks(params?: Record<string, unknown>) {
+  return request.get('/api/v1/inference/backflow/tasks', { params });
+}
+
+export function getBackflowTask(id: string) {
+  return request.get(`/api/v1/inference/backflow/tasks/${id}`);
+}

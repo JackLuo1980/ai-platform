@@ -31,6 +31,7 @@ import OperationMonitoring from './pages/operation/MonitoringDashboard';
 import EvaluationList from './pages/inference/EvaluationList';
 import DriftDashboard from './pages/inference/DriftDashboard';
 import DeploymentPage from './pages/inference/DeploymentPage';
+import DataBackflowPage from './pages/inference/DataBackflowPage';
 import LabelDatasetList from './pages/fastlabel/LabelDatasetList';
 import TaskList from './pages/fastlabel/TaskList';
 import AnnotationPage from './pages/fastlabel/AnnotationPage';
@@ -88,6 +89,7 @@ function App() {
         <Route path="inference/monitoring" element={<MonitoringDashboard />} />
         <Route path="inference/evaluations" element={<EvaluationList />} />
         <Route path="inference/drift" element={<DriftDashboard />} />
+        <Route path="inference/backflow" element={<DataBackflowPage />} />
         <Route path="fastlabel/datasets" element={<LabelDatasetList />} />
         <Route path="fastlabel/tasks" element={<TaskList />} />
         <Route path="fastlabel/tasks/:id/annotate" element={<AnnotationPage />} />

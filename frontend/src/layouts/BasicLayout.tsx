@@ -38,6 +38,7 @@ import {
   ScissorOutlined,
   BlockOutlined,
   RocketOutlined,
+  CloudUploadOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 
@@ -99,6 +100,7 @@ const menuItems: MenuProps['items'] = [
       { key: '/inference/evaluations', icon: <FundProjectionScreenOutlined />, label: 'Evaluations' },
       { key: '/inference/drift', icon: <SwapOutlined />, label: 'Drift' },
       { key: '/inference/deployment', icon: <RocketOutlined />, label: 'Deployment' },
+      { key: '/inference/backflow', icon: <CloudUploadOutlined />, label: 'Data Backflow' },
     ],
   },
   {
