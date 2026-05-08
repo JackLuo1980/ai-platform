@@ -48,80 +48,80 @@ const menuItems: MenuProps['items'] = [
   {
     key: 'console',
     icon: <DashboardOutlined />,
-    label: 'Console',
+    label: '控制台',
     children: [
-      { key: '/console/tenants', icon: <TeamOutlined />, label: 'Tenants' },
-      { key: '/console/users', icon: <UserOutlined />, label: 'Users' },
-      { key: '/console/roles', icon: <SafetyCertificateOutlined />, label: 'Roles' },
-      { key: '/console/projects', icon: <ProjectOutlined />, label: 'Projects' },
-      { key: '/console/audit-logs', icon: <FileSearchOutlined />, label: 'Audit Logs' },
-      { key: '/console/messages', icon: <MailOutlined />, label: 'Messages' },
-      { key: '/console/license', icon: <CopyrightOutlined />, label: 'License' },
+      { key: '/console/tenants', icon: <TeamOutlined />, label: '租户管理' },
+      { key: '/console/users', icon: <UserOutlined />, label: '用户管理' },
+      { key: '/console/roles', icon: <SafetyCertificateOutlined />, label: '角色管理' },
+      { key: '/console/projects', icon: <ProjectOutlined />, label: '项目管理' },
+      { key: '/console/audit-logs', icon: <FileSearchOutlined />, label: '审计日志' },
+      { key: '/console/messages', icon: <MailOutlined />, label: '消息中心' },
+      { key: '/console/license', icon: <CopyrightOutlined />, label: '许可证' },
     ],
   },
   {
     key: 'operation',
     icon: <ClusterOutlined />,
-    label: 'Operation',
+    label: '运维管理',
     children: [
-      { key: '/operation/clusters', icon: <ClusterOutlined />, label: 'Clusters' },
-      { key: '/operation/pools', icon: <DatabaseOutlined />, label: 'Resources' },
-      { key: '/operation/quotas', icon: <AppstoreOutlined />, label: 'Quotas' },
-      { key: '/operation/images', icon: <CloudServerOutlined />, label: 'Images' },
-      { key: '/operation/environments', icon: <ExperimentOutlined />, label: 'Environments' },
-      { key: '/operation/monitoring', icon: <LineChartOutlined />, label: 'Monitoring' },
+      { key: '/operation/clusters', icon: <ClusterOutlined />, label: '集群管理' },
+      { key: '/operation/pools', icon: <DatabaseOutlined />, label: '资源池' },
+      { key: '/operation/quotas', icon: <AppstoreOutlined />, label: '资源配额' },
+      { key: '/operation/images', icon: <CloudServerOutlined />, label: '镜像管理' },
+      { key: '/operation/environments', icon: <ExperimentOutlined />, label: '环境管理' },
+      { key: '/operation/monitoring', icon: <LineChartOutlined />, label: '监控面板' },
     ],
   },
   {
     key: 'lab',
     icon: <ExperimentOutlined />,
-    label: 'Lab',
+    label: '实验室',
     children: [
-      { key: '/lab/datasources', icon: <DatabaseOutlined />, label: 'Data Sources' },
-      { key: '/lab/datasets', icon: <FolderOutlined />, label: 'Datasets' },
-      { key: '/lab/operators', icon: <CodeOutlined />, label: 'Operators' },
-      { key: '/lab/workflows', icon: <ApartmentOutlined />, label: 'Workflows' },
-      { key: '/lab/experiments', icon: <ThunderboltOutlined />, label: 'Experiments' },
-      { key: '/lab/archives', icon: <InboxOutlined />, label: 'Archives' },
-      { key: '/lab/features', icon: <StarOutlined />, label: 'Features' },
-      { key: '/lab/files', icon: <FolderOutlined />, label: 'Files' },
-      { key: '/lab/automl', icon: <ThunderboltOutlined />, label: 'AutoML' },
+      { key: '/lab/datasources', icon: <DatabaseOutlined />, label: '数据源' },
+      { key: '/lab/datasets', icon: <FolderOutlined />, label: '数据集' },
+      { key: '/lab/operators', icon: <CodeOutlined />, label: '算子管理' },
+      { key: '/lab/workflows', icon: <ApartmentOutlined />, label: '工作流' },
+      { key: '/lab/experiments', icon: <ThunderboltOutlined />, label: '实验管理' },
+      { key: '/lab/archives', icon: <InboxOutlined />, label: '模型归档' },
+      { key: '/lab/features', icon: <StarOutlined />, label: '特征工程' },
+      { key: '/lab/files', icon: <FolderOutlined />, label: '文件管理' },
+      { key: '/lab/automl', icon: <ThunderboltOutlined />, label: '自动机器学习' },
     ],
   },
   {
     key: 'inference',
     icon: <RobotOutlined />,
-    label: 'Inference',
+    label: '推理服务',
     children: [
-      { key: '/inference/models', icon: <BlockOutlined />, label: 'Models' },
-      { key: '/inference/online-services', icon: <CloudServerOutlined />, label: 'Online Services' },
-      { key: '/inference/batch-services', icon: <DatabaseOutlined />, label: 'Batch Services' },
-      { key: '/inference/monitoring', icon: <LineChartOutlined />, label: 'Monitoring' },
-      { key: '/inference/evaluations', icon: <FundProjectionScreenOutlined />, label: 'Evaluations' },
-      { key: '/inference/drift', icon: <SwapOutlined />, label: 'Drift' },
-      { key: '/inference/deployment', icon: <RocketOutlined />, label: 'Deployment' },
-      { key: '/inference/backflow', icon: <CloudUploadOutlined />, label: 'Data Backflow' },
+      { key: '/inference/models', icon: <BlockOutlined />, label: '模型管理' },
+      { key: '/inference/online-services', icon: <CloudServerOutlined />, label: '在线服务' },
+      { key: '/inference/batch-services', icon: <DatabaseOutlined />, label: '批量服务' },
+      { key: '/inference/monitoring', icon: <LineChartOutlined />, label: '服务监控' },
+      { key: '/inference/evaluations', icon: <FundProjectionScreenOutlined />, label: '模型评估' },
+      { key: '/inference/drift', icon: <SwapOutlined />, label: '漂移检测' },
+      { key: '/inference/deployment', icon: <RocketOutlined />, label: '部署管理' },
+      { key: '/inference/backflow', icon: <CloudUploadOutlined />, label: '数据回流' },
     ],
   },
   {
     key: 'fastlabel',
     icon: <TagOutlined />,
-    label: 'FastLabel',
+    label: '数据标注',
     children: [
-      { key: '/fastlabel/datasets', icon: <DatabaseOutlined />, label: 'Datasets' },
-      { key: '/fastlabel/tasks', icon: <BlockOutlined />, label: 'Tasks' },
-      { key: '/fastlabel/exports', icon: <ExportOutlined />, label: 'Exports' },
+      { key: '/fastlabel/datasets', icon: <DatabaseOutlined />, label: '标注数据集' },
+      { key: '/fastlabel/tasks', icon: <BlockOutlined />, label: '标注任务' },
+      { key: '/fastlabel/exports', icon: <ExportOutlined />, label: '数据导出' },
     ],
   },
   {
     key: 'scorecard',
     icon: <CalculatorOutlined />,
-    label: 'Scorecard',
+    label: '评分卡',
     children: [
-      { key: '/scorecard/variables', icon: <BarChartOutlined />, label: 'Variables' },
-      { key: '/scorecard/binning', icon: <ScissorOutlined />, label: 'Binning' },
-      { key: '/scorecard/models', icon: <BlockOutlined />, label: 'Models' },
-      { key: '/scorecard/scoring', icon: <CalculatorOutlined />, label: 'Scoring' },
+      { key: '/scorecard/variables', icon: <BarChartOutlined />, label: '变量管理' },
+      { key: '/scorecard/binning', icon: <ScissorOutlined />, label: '分箱管理' },
+      { key: '/scorecard/models', icon: <BlockOutlined />, label: '评分模型' },
+      { key: '/scorecard/scoring', icon: <CalculatorOutlined />, label: '在线评分' },
     ],
   },
 ];
@@ -142,10 +142,10 @@ function BasicLayout() {
   }
 
   const userMenuItems: MenuProps['items'] = [
-    { key: 'profile', icon: <UserOutlined />, label: 'Profile' },
-    { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
+    { key: 'profile', icon: <UserOutlined />, label: '个人资料' },
+    { key: 'settings', icon: <SettingOutlined />, label: '系统设置' },
     { type: 'divider' },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
+    { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', danger: true },
   ];
 
   function handleUserMenuClick(info: { key: string }) {
@@ -180,7 +180,7 @@ function BasicLayout() {
       >
         <div style={{ height: 48, margin: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ color: '#fff', fontSize: collapsed ? 16 : 18, fontWeight: 600, whiteSpace: 'nowrap' }}>
-            {collapsed ? 'AI' : 'AI Platform'}
+            {collapsed ? 'AI' : 'AI 平台'}
           </span>
         </div>
         <Menu

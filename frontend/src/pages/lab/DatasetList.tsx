@@ -13,33 +13,33 @@ function DatasetList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this dataset?',
+      title: '确认删除',
+      content: '确定删除该数据集？',
       onOk: async function () {
         await deleteDataset(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Type', dataIndex: 'type' },
-    { title: 'Format', dataIndex: 'format' },
-    { title: 'Rows', dataIndex: 'rowCount' },
-    { title: 'Columns', dataIndex: 'columnCount' },
-    { title: 'Size', dataIndex: 'size' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
-    { title: 'Version', dataIndex: 'version' },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '类型', dataIndex: 'type' },
+    { title: '格式', dataIndex: 'format' },
+    { title: '行数', dataIndex: 'rowCount' },
+    { title: '列数', dataIndex: 'columnCount' },
+    { title: '大小', dataIndex: 'size' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: '版本', dataIndex: 'version' },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<EyeOutlined />} onClick={function () { navigate(`/lab/datasets/${record.id}`); }}>Detail</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<EyeOutlined />} onClick={function () { navigate(`/lab/datasets/${record.id}`); }}>详情</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -52,28 +52,28 @@ function DatasetList() {
         key={refreshKey}
         columns={columns}
         fetchData={listDatasets}
-        searchFields={[{ key: 'name', label: 'Name' }, { key: 'type', label: 'Type' }]}
+        searchFields={[{ key: 'name', label: '名称' }, { key: 'type', label: '类型' }]}
         toolbar={
-          <Button type="primary" icon={<PlusOutlined />} onClick={function () { setUploadOpen(true); }}>Upload Dataset</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={function () { setUploadOpen(true); }}>上传数据集</Button>
         }
       />
-      <Modal title="Upload Dataset" open={uploadOpen} onCancel={function () { setUploadOpen(false); }} footer={null}>
+      <Modal title="上传数据集" open={uploadOpen} onCancel={function () { setUploadOpen(false); }} footer={null}>
         <Upload.Dragger
           name="file"
           action="/api/lab/datasets"
           headers={{ Authorization: `Bearer ${localStorage.getItem('token')}` }}
           onChange={function (info) {
             if (info.file.status === 'done') {
-              message.success('Uploaded');
+              message.success('上传成功');
               setUploadOpen(false);
               setRefreshKey(function (k) { return k + 1; });
             } else if (info.file.status === 'error') {
-              message.error('Upload failed');
+              message.error('上传失败');
             }
           }}
         >
           <p><UploadOutlined style={{ fontSize: 32, color: '#1890ff' }} /></p>
-          <p>Click or drag CSV/Parquet/JSON files to upload</p>
+          <p>点击或拖拽CSV/Parquet/JSON文件上传</p>
         </Upload.Dragger>
       </Modal>
     </div>

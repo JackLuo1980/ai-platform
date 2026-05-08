@@ -24,7 +24,7 @@ export default function FileManagerPage() {
       .then(function (res) {
         setFiles(res.data.data.items || res.data.data || []);
       })
-      .catch(function () { message.error('Failed to load files'); })
+      .catch(function () { message.error('加载文件失败'); })
       .finally(function () { setLoading(false); });
   }
 
@@ -49,30 +49,30 @@ export default function FileManagerPage() {
     formData.append('path', path);
     uploadFile(formData)
       .then(function () {
-        message.success('File uploaded');
+        message.success('文件已上传');
         fetchFiles(path);
         setUploadVisible(false);
       })
-      .catch(function () { message.error('Upload failed'); });
+      .catch(function () { message.error('上传失败'); });
   }
 
   function handleCreateFolder(values: any) {
     const fullPath = path === '/' ? '/' + values.name : path + '/' + values.name;
     uploadFile(new FormData())
       .then(function () {
-        message.success('Folder created');
+        message.success('文件夹已创建');
         setFolderVisible(false);
         folderForm.resetFields();
         fetchFiles(path);
       })
-      .catch(function () { message.error('Create folder failed'); });
+      .catch(function () { message.error('创建文件夹失败'); });
   }
 
   function handleDelete(name: string) {
     const fullPath = path === '/' ? '/' + name : path + '/' + name;
     deleteFile(fullPath)
-      .then(function () { message.success('Deleted'); fetchFiles(path); })
-      .catch(function () { message.error('Delete failed'); });
+      .then(function () { message.success('已删除'); fetchFiles(path); })
+      .catch(function () { message.error('删除失败'); });
   }
 
   function handleDownload(record: any) {
@@ -87,7 +87,7 @@ export default function FileManagerPage() {
         link.click();
         link.remove();
       })
-      .catch(function () { message.error('Download failed'); });
+      .catch(function () { message.error('下载失败'); });
   }
 
   function handlePreview(record: any) {
@@ -97,7 +97,7 @@ export default function FileManagerPage() {
 
   const columns = [
     {
-      title: 'Name',
+      title: '名称',
       dataIndex: 'name',
       key: 'name',
       render: function (name: string, record: any) {
@@ -107,34 +107,34 @@ export default function FileManagerPage() {
       },
     },
     {
-      title: 'Type',
+      title: '类型',
       dataIndex: 'type',
       key: 'type',
-      render: function (type: string) { return type === 'folder' ? 'Folder' : 'File'; },
+      render: function (type: string) { return type === 'folder' ? '文件夹' : '文件'; },
     },
     {
-      title: 'Size',
+      title: '大小',
       dataIndex: 'size',
       key: 'size',
       render: function (size: number, record: any) {
         return record.type === 'folder' ? '-' : size !== undefined ? (size / 1024).toFixed(1) + ' KB' : '-';
       },
     },
-    { title: 'Owner', dataIndex: 'owner', key: 'owner' },
-    { title: 'Modified', dataIndex: 'modifiedAt', key: 'modifiedAt' },
+    { title: '所有者', dataIndex: 'owner', key: 'owner' },
+    { title: '修改时间', dataIndex: 'modifiedAt', key: 'modifiedAt' },
     {
-      title: 'Actions',
+      title: '操作',
       key: 'actions',
       render: function (_: any, record: any) {
         return (
           <Space>
             {record.type !== 'folder' ? (
               <>
-                <Button size="small" icon={<EyeOutlined />} onClick={function () { handlePreview(record); }}>Preview</Button>
-                <Button size="small" icon={<DownloadOutlined />} onClick={function () { handleDownload(record); }}>Download</Button>
+                <Button size="small" icon={<EyeOutlined />} onClick={function () { handlePreview(record); }}>预览</Button>
+                <Button size="small" icon={<DownloadOutlined />} onClick={function () { handleDownload(record); }}>下载</Button>
               </>
             ) : null}
-            <Button size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.name); }}>Delete</Button>
+            <Button size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.name); }}>删除</Button>
           </Space>
         );
       },
@@ -153,23 +153,23 @@ export default function FileManagerPage() {
           ]}
         />
         <Space>
-          <Button icon={<UploadOutlined />} onClick={function () { setUploadVisible(true); }}>Upload</Button>
-          <Button icon={<FolderAddOutlined />} onClick={function () { setFolderVisible(true); }}>New Folder</Button>
+          <Button icon={<UploadOutlined />} onClick={function () { setUploadVisible(true); }}>上传</Button>
+          <Button icon={<FolderAddOutlined />} onClick={function () { setFolderVisible(true); }}>新建文件夹</Button>
         </Space>
       </div>
       <Table rowKey="name" columns={columns} dataSource={files} loading={loading} pagination={false} />
-      <Modal title="Upload File" open={uploadVisible} onCancel={function () { setUploadVisible(false); }} footer={null}>
+      <Modal title="上传文件" open={uploadVisible} onCancel={function () { setUploadVisible(false); }} footer={null}>
         <Upload.Dragger customRequest={handleUpload} showUploadList={false}>
           <p><UploadOutlined style={{ fontSize: 32 }} /></p>
-          <p>Click or drag file to upload</p>
+          <p>点击或拖拽文件上传</p>
         </Upload.Dragger>
       </Modal>
-      <Modal title="New Folder" open={folderVisible} onCancel={function () { setFolderVisible(false); }} onOk={function () { folderForm.submit(); }}>
+      <Modal title="新建文件夹" open={folderVisible} onCancel={function () { setFolderVisible(false); }} onOk={function () { folderForm.submit(); }}>
         <Form form={folderForm} layout="vertical" onFinish={handleCreateFolder}>
-          <Form.Item name="name" label="Folder Name" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="name" label="文件夹名称" rules={[{ required: true }]}><Input /></Form.Item>
         </Form>
       </Modal>
-      <Modal title="File Preview" open={previewVisible} onCancel={function () { setPreviewVisible(false); }} footer={null} width={640}>
+      <Modal title="文件预览" open={previewVisible} onCancel={function () { setPreviewVisible(false); }} footer={null} width={640}>
         {previewContent ? <pre style={{ background: '#f5f5f5', padding: 16, borderRadius: 8, maxHeight: 400, overflow: 'auto' }}>{previewContent.name}</pre> : null}
       </Modal>
     </div>

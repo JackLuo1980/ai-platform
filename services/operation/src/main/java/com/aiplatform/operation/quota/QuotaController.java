@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/quotas")
+@RequestMapping("/resource-quotas")
 public class QuotaController {
 
     @Autowired

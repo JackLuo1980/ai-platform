@@ -31,29 +31,29 @@ function EnvironmentList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this environment?',
+      title: '确认删除',
+      content: '确认删除此环境？',
       onOk: async function () {
         await deleteEnvironment(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Image', dataIndex: 'imageName' },
-    { title: 'Type', dataIndex: 'type' },
-    { title: 'Description', dataIndex: 'description', ellipsis: true },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '镜像', dataIndex: 'imageName' },
+    { title: '类型', dataIndex: 'type' },
+    { title: '描述', dataIndex: 'description', ellipsis: true },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -66,32 +66,32 @@ function EnvironmentList() {
         key={refreshKey}
         columns={columns}
         fetchData={listEnvironments}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Environment</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新增环境</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Environment' : 'New Environment'}
+        title={editing ? '编辑环境' : '新增环境'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="imageId" label="Image" rules={[{ required: true }]}>
-          <Select placeholder="Select image" />
+        <Form.Item name="imageId" label="镜像" rules={[{ required: true }]}>
+          <Select placeholder="请选择镜像" />
         </Form.Item>
-        <Form.Item name="type" label="Type">
-          <Select options={[{ label: 'Notebook', value: 'notebook' }, { label: 'Training', value: 'training' }, { label: 'Inference', value: 'inference' }]} />
+        <Form.Item name="type" label="类型">
+          <Select options={[{ label: '笔记本', value: 'notebook' }, { label: '训练', value: 'training' }, { label: '推理', value: 'inference' }]} />
         </Form.Item>
-        <Form.Item name="pipPackages" label="Pip Packages">
-          <Select mode="tags" placeholder="Add packages" />
+        <Form.Item name="pipPackages" label="Pip 包">
+          <Select mode="tags" placeholder="添加包" />
         </Form.Item>
-        <Form.Item name="envVars" label="Environment Variables">
-          <Input.TextArea rows={3} placeholder="KEY=VALUE per line" />
+        <Form.Item name="envVars" label="环境变量">
+          <Input.TextArea rows={3} placeholder="每行一个 KEY=VALUE" />
         </Form.Item>
-        <Form.Item name="description" label="Description">
+        <Form.Item name="description" label="描述">
           <Input.TextArea rows={3} />
         </Form.Item>
       </DrawerForm>

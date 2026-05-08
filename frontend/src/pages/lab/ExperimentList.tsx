@@ -25,13 +25,13 @@ function ExperimentList() {
   async function handleCreate() {
     const values = await new Promise<Record<string, unknown> | null>(function (resolve) {
       Modal.confirm({
-        title: 'New Experiment',
+        title: '新建实验',
         content: (
           <Form layout="vertical" id="experiment-form">
-            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+            <Form.Item name="name" label="名称" rules={[{ required: true }]}>
               <Input />
             </Form.Item>
-            <Form.Item name="description" label="Description">
+            <Form.Item name="description" label="描述">
               <Input.TextArea rows={2} />
             </Form.Item>
           </Form>
@@ -46,38 +46,38 @@ function ExperimentList() {
     });
     if (values) {
       await createExperiment(values);
-      message.success('Created');
+      message.success('已创建');
       setRefreshKey(function (k) { return k + 1; });
     }
   }
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this experiment?',
+      title: '确认删除',
+      content: '确定删除该实验？',
       onOk: async function () {
         await deleteExperiment(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Workflow', dataIndex: 'workflowName' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
-    { title: 'Best Metric', dataIndex: 'bestMetric' },
-    { title: 'Duration', dataIndex: 'duration' },
-    { title: 'Started', dataIndex: 'startedAt' },
-    { title: 'Finished', dataIndex: 'finishedAt' },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '工作流', dataIndex: 'workflowName' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: '最佳指标', dataIndex: 'bestMetric' },
+    { title: '耗时', dataIndex: 'duration' },
+    { title: '开始时间', dataIndex: 'startedAt' },
+    { title: '结束时间', dataIndex: 'finishedAt' },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<BarChartOutlined />} onClick={function () { handleMetrics(record); }}>Metrics</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<BarChartOutlined />} onClick={function () { handleMetrics(record); }}>指标</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -90,10 +90,10 @@ function ExperimentList() {
         key={refreshKey}
         columns={columns}
         fetchData={listExperiments}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Experiment</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新建实验</Button>}
       />
-      <Modal title="Experiment Metrics" open={metricOpen} onCancel={function () { setMetricOpen(false); }} footer={null} width={900}>
+      <Modal title="实验指标" open={metricOpen} onCancel={function () { setMetricOpen(false); }} footer={null} width={900}>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={metricData}>
             <CartesianGrid strokeDasharray="3 3" />

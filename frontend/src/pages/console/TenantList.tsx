@@ -39,11 +39,11 @@ function TenantList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure you want to delete this tenant?',
+      title: '确认删除',
+      content: '确定要删除该租户吗？',
       onOk: async function () {
         await deleteTenant(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
@@ -51,38 +51,38 @@ function TenantList() {
 
   async function handleToggleStatus(record: Record<string, unknown>) {
     await toggleTenantStatus(record.id as string, !record.enabled);
-    message.success('Status updated');
+    message.success('状态已更新');
     setRefreshKey(function (k) { return k + 1; });
   }
 
   async function handleQuotaSubmit(values: Record<string, unknown>) {
     if (quotaTarget) {
       await updateTenantQuota(quotaTarget.id as string, values);
-      message.success('Quota updated');
+      message.success('配额已更新');
       setQuotaOpen(false);
       setRefreshKey(function (k) { return k + 1; });
     }
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Code', dataIndex: 'code' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
-    { title: 'CPU Quota', dataIndex: 'cpuQuota' },
-    { title: 'GPU Quota', dataIndex: 'gpuQuota' },
-    { title: 'Storage Quota', dataIndex: 'storageQuota' },
-    { title: 'Enabled', dataIndex: 'enabled', render: function (val: boolean, record: Record<string, unknown>) {
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '编码', dataIndex: 'code' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: 'CPU配额', dataIndex: 'cpuQuota' },
+    { title: 'GPU配额', dataIndex: 'gpuQuota' },
+    { title: '存储配额', dataIndex: 'storageQuota' },
+    { title: '是否启用', dataIndex: 'enabled', render: function (val: boolean, record: Record<string, unknown>) {
       return <Switch checked={val} onChange={function () { handleToggleStatus(record); }} />;
     }},
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" icon={<SettingOutlined />} onClick={function () { handleQuota(record); }}>Quota</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" icon={<SettingOutlined />} onClick={function () { handleQuota(record); }}>配额</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -95,42 +95,42 @@ function TenantList() {
         key={refreshKey}
         columns={columns}
         fetchData={listTenants}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Tenant</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新建租户</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Tenant' : 'New Tenant'}
+        title={editing ? '编辑租户' : '新建租户'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="code" label="Code" rules={[{ required: true }]}>
+        <Form.Item name="code" label="编码" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="description" label="Description">
+        <Form.Item name="description" label="描述">
           <Input.TextArea rows={3} />
         </Form.Item>
       </DrawerForm>
-      <Modal title="Quota Settings" open={quotaOpen} onCancel={function () { setQuotaOpen(false); }} footer={null} destroyOnClose>
+      <Modal title="配额设置" open={quotaOpen} onCancel={function () { setQuotaOpen(false); }} footer={null} destroyOnClose>
         <Form layout="vertical" onFinish={handleQuotaSubmit} initialValues={quotaTarget || undefined}>
-          <Form.Item name="cpuQuota" label="CPU Cores">
+          <Form.Item name="cpuQuota" label="CPU核心数">
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="gpuQuota" label="GPU Count">
+          <Form.Item name="gpuQuota" label="GPU数量">
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="memoryQuota" label="Memory (GB)">
+          <Form.Item name="memoryQuota" label="内存 (GB)">
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="storageQuota" label="Storage (GB)">
+          <Form.Item name="storageQuota" label="存储 (GB)">
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">Save</Button>
+            <Button type="primary" htmlType="submit">保存</Button>
           </Form.Item>
         </Form>
       </Modal>

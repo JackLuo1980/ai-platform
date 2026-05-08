@@ -10,11 +10,11 @@ function ModelArchiveList() {
 
   async function handleApprove(id: string) {
     Modal.confirm({
-      title: 'Approve Model',
-      content: 'Approve this model for production?',
+      title: '审批通过',
+      content: '确定将该模型审批通过投入生产？',
       onOk: async function () {
         await approveArchive(id);
-        message.success('Approved');
+        message.success('已通过');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
@@ -22,35 +22,35 @@ function ModelArchiveList() {
 
   async function handleReject(id: string) {
     Modal.confirm({
-      title: 'Reject Model',
-      content: 'Reject this model?',
-      okText: 'Reject',
+      title: '驳回模型',
+      content: '确定驳回该模型？',
+      okText: '驳回',
       okButtonProps: { danger: true },
       onOk: async function () {
-        await rejectArchive(id, 'Rejected by reviewer');
-        message.success('Rejected');
+        await rejectArchive(id, '审核人驳回');
+        message.success('已驳回');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Model Name', dataIndex: 'modelName', sorter: true },
-    { title: 'Version', dataIndex: 'version' },
-    { title: 'Framework', dataIndex: 'framework' },
-    { title: 'Metrics', dataIndex: 'metrics', ellipsis: true },
-    { title: 'Submitted By', dataIndex: 'submittedBy' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
-    { title: 'Submitted', dataIndex: 'submittedAt', sorter: true },
+    { title: '模型名称', dataIndex: 'modelName', sorter: true },
+    { title: '版本', dataIndex: 'version' },
+    { title: '框架', dataIndex: 'framework' },
+    { title: '指标', dataIndex: 'metrics', ellipsis: true },
+    { title: '提交人', dataIndex: 'submittedBy' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: '提交时间', dataIndex: 'submittedAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
             {record.status === 'pending' ? (
               <>
-                <Button type="link" size="small" icon={<CheckOutlined />} style={{ color: '#52c41a' }} onClick={function () { handleApprove(record.id as string); }}>Approve</Button>
-                <Button type="link" size="small" danger icon={<CloseOutlined />} onClick={function () { handleReject(record.id as string); }}>Reject</Button>
+                <Button type="link" size="small" icon={<CheckOutlined />} style={{ color: '#52c41a' }} onClick={function () { handleApprove(record.id as string); }}>通过</Button>
+                <Button type="link" size="small" danger icon={<CloseOutlined />} onClick={function () { handleReject(record.id as string); }}>驳回</Button>
               </>
             ) : null}
           </Space>
@@ -64,7 +64,7 @@ function ModelArchiveList() {
       key={refreshKey}
       columns={columns}
       fetchData={listArchives}
-      searchFields={[{ key: 'modelName', label: 'Model Name' }]}
+      searchFields={[{ key: 'modelName', label: '模型名称' }]}
     />
   );
 }

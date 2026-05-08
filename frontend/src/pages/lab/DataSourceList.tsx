@@ -33,11 +33,11 @@ function DataSourceList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this data source?',
+      title: '确认删除',
+      content: '确定删除该数据源？',
       onOk: async function () {
         await deleteDataSource(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
@@ -47,31 +47,31 @@ function DataSourceList() {
     setTesting(id);
     try {
       await testDataSourceConnection(id);
-      message.success('Connection successful');
+      message.success('连接成功');
     } catch {
-      message.error('Connection failed');
+      message.error('连接失败');
     } finally {
       setTesting(null);
     }
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Type', dataIndex: 'type' },
-    { title: 'Host', dataIndex: 'host' },
-    { title: 'Database', dataIndex: 'database' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '类型', dataIndex: 'type' },
+    { title: '主机', dataIndex: 'host' },
+    { title: '数据库', dataIndex: 'database' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
             <Button type="link" size="small" icon={testing === record.id ? <LoadingOutlined /> : <ApiOutlined />} onClick={function () { handleTest(record.id as string); }} disabled={!!testing}>
-              Test
+              测试
             </Button>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -84,35 +84,35 @@ function DataSourceList() {
         key={refreshKey}
         columns={columns}
         fetchData={listDataSources}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Data Source</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新建数据源</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Data Source' : 'New Data Source'}
+        title={editing ? '编辑数据源' : '新建数据源'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="type" label="Type" rules={[{ required: true }]}>
+        <Form.Item name="type" label="类型" rules={[{ required: true }]}>
           <Select options={[{ label: 'MySQL', value: 'mysql' }, { label: 'PostgreSQL', value: 'postgresql' }, { label: 'Hive', value: 'hive' }, { label: 'HDFS', value: 'hdfs' }, { label: 'S3', value: 's3' }, { label: 'MinIO', value: 'minio' }]} />
         </Form.Item>
-        <Form.Item name="host" label="Host" rules={[{ required: true }]}>
+        <Form.Item name="host" label="主机" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="port" label="Port">
+        <Form.Item name="port" label="端口">
           <Input />
         </Form.Item>
-        <Form.Item name="database" label="Database">
+        <Form.Item name="database" label="数据库">
           <Input />
         </Form.Item>
-        <Form.Item name="username" label="Username">
+        <Form.Item name="username" label="用户名">
           <Input />
         </Form.Item>
-        <Form.Item name="password" label="Password">
+        <Form.Item name="password" label="密码">
           <Input.Password />
         </Form.Item>
       </DrawerForm>

@@ -51,22 +51,22 @@ function DatasetDetail() {
     : [];
 
   const statColumns = [
-    { title: 'Column', dataIndex: 'name' },
-    { title: 'Type', dataIndex: 'type' },
-    { title: 'Count', dataIndex: 'count' },
-    { title: 'Missing', dataIndex: 'missing' },
-    { title: 'Mean', dataIndex: 'mean' },
-    { title: 'Std', dataIndex: 'std' },
-    { title: 'Min', dataIndex: 'min' },
-    { title: 'Max', dataIndex: 'max' },
+    { title: '列名', dataIndex: 'name' },
+    { title: '类型', dataIndex: 'type' },
+    { title: '计数', dataIndex: 'count' },
+    { title: '缺失值', dataIndex: 'missing' },
+    { title: '均值', dataIndex: 'mean' },
+    { title: '标准差', dataIndex: 'std' },
+    { title: '最小值', dataIndex: 'min' },
+    { title: '最大值', dataIndex: 'max' },
   ];
 
   const versionColumns = [
-    { title: 'Version', dataIndex: 'version' },
-    { title: 'Rows', dataIndex: 'rowCount' },
-    { title: 'Size', dataIndex: 'size' },
-    { title: 'Created', dataIndex: 'createdAt' },
-    { title: 'CreatedBy', dataIndex: 'createdBy' },
+    { title: '版本', dataIndex: 'version' },
+    { title: '行数', dataIndex: 'rowCount' },
+    { title: '大小', dataIndex: 'size' },
+    { title: '创建时间', dataIndex: 'createdAt' },
+    { title: '创建者', dataIndex: 'createdBy' },
   ];
 
   return (
@@ -74,7 +74,7 @@ function DatasetDetail() {
       <Tabs activeKey={activeTab} onChange={handleTabChange} items={[
         {
           key: 'preview',
-          label: 'Preview',
+          label: '预览',
           children: (
             <Table
               columns={previewColumns}
@@ -87,12 +87,12 @@ function DatasetDetail() {
         },
         {
           key: 'stats',
-          label: 'Statistics',
+          label: '统计',
           children: (
             <div>
               <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-                <Col span={6}><Card><Statistic title="Total Rows" value={previewData?.rows.length || 0} /></Card></Col>
-                <Col span={6}><Card><Statistic title="Total Columns" value={previewData?.columns.length || 0} /></Card></Col>
+                <Col span={6}><Card><Statistic title="总行数" value={previewData?.rows.length || 0} /></Card></Col>
+                <Col span={6}><Card><Statistic title="总列数" value={previewData?.columns.length || 0} /></Card></Col>
               </Row>
               <Table columns={statColumns} dataSource={statsData} rowKey="name" size="small" />
             </div>
@@ -100,7 +100,7 @@ function DatasetDetail() {
         },
         {
           key: 'versions',
-          label: 'Versions',
+          label: '版本',
           children: <Table columns={versionColumns} dataSource={versions} rowKey="version" size="small" />,
         },
       ]} />

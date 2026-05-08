@@ -52,7 +52,8 @@ export default function DataBackflowPage() {
     { title: '数据集名称', dataIndex: 'targetDatasetName', key: 'targetDatasetName' },
     { title: '记录数', dataIndex: 'recordCount', key: 'recordCount', width: 80 },
     { title: '状态', dataIndex: 'status', key: 'status', width: 100, render: function (s: string) {
-      return <Tag color={statusColors[s] || 'default'}>{s}</Tag>
+      var statusLabels: Record<string, string> = { PENDING: '等待中', RUNNING: '运行中', COMPLETED: '已完成', FAILED: '失败' }
+      return <Tag color={statusColors[s] || 'default'}>{statusLabels[s] || s}</Tag>
     }},
     { title: '目标数据集ID', dataIndex: 'targetDatasetId', key: 'targetDatasetId', width: 100 },
     { title: '错误信息', dataIndex: 'errorMessage', key: 'errorMessage', ellipsis: true },

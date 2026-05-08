@@ -31,32 +31,32 @@ function ImageList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this image?',
+      title: '确认删除',
+      content: '确认删除此镜像？',
       onOk: async function () {
         await deleteImage(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Version', dataIndex: 'version' },
-    { title: 'Type', dataIndex: 'type' },
-    { title: 'Framework', dataIndex: 'framework' },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '版本', dataIndex: 'version' },
+    { title: '类型', dataIndex: 'type' },
+    { title: '框架', dataIndex: 'framework' },
     { title: 'Python', dataIndex: 'pythonVersion' },
     { title: 'CUDA', dataIndex: 'cudaVersion' },
-    { title: 'Size', dataIndex: 'size' },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '大小', dataIndex: 'size' },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -69,32 +69,32 @@ function ImageList() {
         key={refreshKey}
         columns={columns}
         fetchData={listImages}
-        searchFields={[{ key: 'name', label: 'Name' }, { key: 'framework', label: 'Framework' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Image</Button>}
+        searchFields={[{ key: 'name', label: '名称' }, { key: 'framework', label: '框架' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新增镜像</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Image' : 'New Image'}
+        title={editing ? '编辑镜像' : '新增镜像'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="version" label="Version">
+        <Form.Item name="version" label="版本">
           <Input />
         </Form.Item>
-        <Form.Item name="type" label="Type">
+        <Form.Item name="type" label="类型">
           <Select options={[{ label: 'CPU', value: 'cpu' }, { label: 'GPU', value: 'gpu' }]} />
         </Form.Item>
-        <Form.Item name="framework" label="Framework">
+        <Form.Item name="framework" label="框架">
           <Select options={[{ label: 'PyTorch', value: 'pytorch' }, { label: 'TensorFlow', value: 'tensorflow' }, { label: 'MXNet', value: 'mxnet' }]} />
         </Form.Item>
-        <Form.Item name="registryUrl" label="Registry URL">
+        <Form.Item name="registryUrl" label="仓库地址">
           <Input />
         </Form.Item>
-        <Form.Item name="description" label="Description">
+        <Form.Item name="description" label="描述">
           <Input.TextArea rows={3} />
         </Form.Item>
       </DrawerForm>

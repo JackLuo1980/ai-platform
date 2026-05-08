@@ -40,32 +40,32 @@ function ResourcePoolList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this resource pool?',
+      title: '确认删除',
+      content: '确认删除此资源池？',
       onOk: async function () {
         await deleteResourcePool(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Cluster', dataIndex: 'clusterName' },
-    { title: 'Type', dataIndex: 'type' },
-    { title: 'CPU Used/Total', dataIndex: 'cpuUsage', render: function (v: number, r: any) { return `${v || 0}/${r.cpuTotal || 0}`; } },
-    { title: 'GPU Used/Total', dataIndex: 'gpuUsage', render: function (v: number, r: any) { return `${v || 0}/${r.gpuTotal || 0}`; } },
-    { title: 'Memory Used/Total', dataIndex: 'memoryUsage', render: function (v: number, r: any) { return `${v || 0}/${r.memoryTotal || 0} GB`; } },
-    { title: 'Status', dataIndex: 'status' },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '集群', dataIndex: 'clusterName' },
+    { title: '类型', dataIndex: 'type' },
+    { title: 'CPU 已用/总量', dataIndex: 'cpuUsage', render: function (v: number, r: any) { return `${v || 0}/${r.cpuTotal || 0}`; } },
+    { title: 'GPU 已用/总量', dataIndex: 'gpuUsage', render: function (v: number, r: any) { return `${v || 0}/${r.gpuTotal || 0}`; } },
+    { title: '内存 已用/总量', dataIndex: 'memoryUsage', render: function (v: number, r: any) { return `${v || 0}/${r.memoryTotal || 0} GB`; } },
+    { title: '状态', dataIndex: 'status' },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<BarChartOutlined />} onClick={function () { handleUsage(record); }}>Usage</Button>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<BarChartOutlined />} onClick={function () { handleUsage(record); }}>用量</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -78,36 +78,36 @@ function ResourcePoolList() {
         key={refreshKey}
         columns={columns}
         fetchData={listResourcePools}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Pool</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新增资源池</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Pool' : 'New Pool'}
+        title={editing ? '编辑资源池' : '新增资源池'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="clusterId" label="Cluster" rules={[{ required: true }]}>
+        <Form.Item name="clusterId" label="集群" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="type" label="Type">
+        <Form.Item name="type" label="类型">
           <Input />
         </Form.Item>
-        <Form.Item name="cpuTotal" label="CPU Cores">
+        <Form.Item name="cpuTotal" label="CPU 核数">
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item name="gpuTotal" label="GPU Cards">
+        <Form.Item name="gpuTotal" label="GPU 卡数">
           <InputNumber min={0} style={{ width: '100%' }} />
         </Form.Item>
-        <Form.Item name="memoryTotal" label="Memory (GB)">
+        <Form.Item name="memoryTotal" label="内存 (GB)">
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
       </DrawerForm>
-      <Modal title="Resource Usage" open={chartOpen} onCancel={function () { setChartOpen(false); }} footer={null} width={700}>
+      <Modal title="资源用量" open={chartOpen} onCancel={function () { setChartOpen(false); }} footer={null} width={700}>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -115,8 +115,8 @@ function ResourcePoolList() {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="used" fill="#1890ff" name="Used" />
-            <Bar dataKey="total" fill="#e8e8e8" name="Total" />
+            <Bar dataKey="used" fill="#1890ff" name="已用" />
+            <Bar dataKey="total" fill="#e8e8e8" name="总量" />
           </BarChart>
         </ResponsiveContainer>
       </Modal>

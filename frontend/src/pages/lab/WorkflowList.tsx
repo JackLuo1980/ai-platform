@@ -34,11 +34,11 @@ function WorkflowList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this workflow?',
+      title: '确认删除',
+      content: '确定删除该工作流？',
       onOk: async function () {
         await deleteWorkflow(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
@@ -46,32 +46,32 @@ function WorkflowList() {
 
   async function handleRun(id: string) {
     Modal.confirm({
-      title: 'Run Workflow',
-      content: 'Start executing this workflow?',
+      title: '运行工作流',
+      content: '确定开始执行该工作流？',
       onOk: async function () {
         await runWorkflow(id);
-        message.success('Workflow started');
+        message.success('工作流已启动');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Description', dataIndex: 'description', ellipsis: true },
-    { title: 'Nodes', dataIndex: 'nodeCount' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
-    { title: 'Last Run', dataIndex: 'lastRunAt' },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '描述', dataIndex: 'description', ellipsis: true },
+    { title: '节点数', dataIndex: 'nodeCount' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: '上次运行', dataIndex: 'lastRunAt' },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
             <Button type="link" size="small" icon={<ApartmentOutlined />} onClick={function () { navigate(`/lab/workflows/${record.id}`); }}>DAG</Button>
-            <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={function () { handleRun(record.id as string); }}>Run</Button>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={function () { handleRun(record.id as string); }}>运行</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -84,20 +84,20 @@ function WorkflowList() {
         key={refreshKey}
         columns={columns}
         fetchData={listWorkflows}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Workflow</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新建工作流</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Workflow' : 'New Workflow'}
+        title={editing ? '编辑工作流' : '新建工作流'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="description" label="Description">
+        <Form.Item name="description" label="描述">
           <Input.TextArea rows={3} />
         </Form.Item>
       </DrawerForm>

@@ -41,31 +41,31 @@ function OperatorList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this operator?',
+      title: '确认删除',
+      content: '确定删除该算子？',
       onOk: async function () {
         await deleteOperator(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Type', dataIndex: 'type', render: function (type: string) { return <Tag>{type}</Tag>; } },
-    { title: 'Category', dataIndex: 'category' },
-    { title: 'Version', dataIndex: 'version' },
-    { title: 'Description', dataIndex: 'description', ellipsis: true },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '类型', dataIndex: 'type', render: function (type: string) { return <Tag>{type}</Tag>; } },
+    { title: '分类', dataIndex: 'category' },
+    { title: '版本', dataIndex: 'version' },
+    { title: '描述', dataIndex: 'description', ellipsis: true },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<CodeOutlined />} onClick={function () { handleViewCode(record); }}>Code</Button>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<CodeOutlined />} onClick={function () { handleViewCode(record); }}>代码</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -78,11 +78,11 @@ function OperatorList() {
         <Space>
           <Select
             style={{ width: 160 }}
-            placeholder="Filter by type"
+            placeholder="按类型筛选"
             allowClear
             value={typeFilter || undefined}
             onChange={setTypeFilter}
-            options={[{ label: 'Preset', value: 'preset' }, { label: 'Custom', value: 'custom' }]}
+            options={[{ label: '预设', value: 'preset' }, { label: '自定义', value: 'custom' }]}
           />
         </Space>
       </div>
@@ -90,35 +90,35 @@ function OperatorList() {
         key={refreshKey}
         columns={columns}
         fetchData={function (params) { return listOperators({ ...params, type: typeFilter || undefined }); }}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Operator</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新建算子</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Operator' : 'New Operator'}
+        title={editing ? '编辑算子' : '新建算子'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="type" label="Type" rules={[{ required: true }]}>
-          <Select options={[{ label: 'Preset', value: 'preset' }, { label: 'Custom', value: 'custom' }]} />
+        <Form.Item name="type" label="类型" rules={[{ required: true }]}>
+          <Select options={[{ label: '预设', value: 'preset' }, { label: '自定义', value: 'custom' }]} />
         </Form.Item>
-        <Form.Item name="category" label="Category">
-          <Select options={[{ label: 'Data Processing', value: 'data' }, { label: 'Feature Engineering', value: 'feature' }, { label: 'Model Training', value: 'training' }, { label: 'Evaluation', value: 'evaluation' }]} />
+        <Form.Item name="category" label="分类">
+          <Select options={[{ label: '数据处理', value: 'data' }, { label: '特征工程', value: 'feature' }, { label: '模型训练', value: 'training' }, { label: '模型评估', value: 'evaluation' }]} />
         </Form.Item>
-        <Form.Item name="code" label="Code">
+        <Form.Item name="code" label="代码">
           <Input.TextArea rows={10} style={{ fontFamily: 'monospace' }} />
         </Form.Item>
-        <Form.Item name="description" label="Description">
+        <Form.Item name="description" label="描述">
           <Input.TextArea rows={3} />
         </Form.Item>
       </DrawerForm>
-      <Modal title={codeTarget?.name ? `Code: ${codeTarget.name}` : 'Code'} open={codeOpen} onCancel={function () { setCodeOpen(false); }} footer={null} width={800}>
+      <Modal title={codeTarget?.name ? `代码: ${codeTarget.name}` : '代码'} open={codeOpen} onCancel={function () { setCodeOpen(false); }} footer={null} width={800}>
         <pre style={{ background: '#f5f5f5', padding: 16, borderRadius: 4, overflow: 'auto', maxHeight: 500, fontSize: 13, fontFamily: 'monospace' }}>
-          {codeValue || 'No code available'}
+          {codeValue || '暂无代码'}
         </pre>
       </Modal>
     </div>

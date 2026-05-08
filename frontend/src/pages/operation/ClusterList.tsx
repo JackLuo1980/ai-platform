@@ -25,7 +25,7 @@ function ClusterList() {
     } else {
       await createCluster(values);
     }
-    message.success('Saved');
+    message.success('保存成功');
     setModalOpen(false);
     loadClusters();
   }
@@ -38,11 +38,11 @@ function ClusterList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Delete this cluster?',
+      title: '确认删除',
+      content: '确认删除此集群？',
       onOk: async function () {
         await deleteCluster(id);
-        message.success('Deleted');
+        message.success('已删除');
         loadClusters();
       },
     });
@@ -52,8 +52,8 @@ function ClusterList() {
     <div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
         <Space>
-          <Button icon={<ReloadOutlined />} onClick={loadClusters}>Refresh</Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={function () { setEditing(null); form.resetFields(); setModalOpen(true); }}>Add Cluster</Button>
+          <Button icon={<ReloadOutlined />} onClick={loadClusters}>刷新</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={function () { setEditing(null); form.resetFields(); setModalOpen(true); }}>新增集群</Button>
         </Space>
       </div>
       <Row gutter={[16, 16]}>
@@ -64,35 +64,35 @@ function ClusterList() {
                 title={c.name}
                 extra={<StatusTag status={c.status} />}
                 actions={[
-                  <Button type="link" onClick={function () { handleEdit(c); }}>Edit</Button>,
-                  <Button type="link" danger onClick={function () { handleDelete(c.id); }}>Delete</Button>,
+                  <Button type="link" onClick={function () { handleEdit(c); }}>编辑</Button>,
+                  <Button type="link" danger onClick={function () { handleDelete(c.id); }}>删除</Button>,
                 ]}
               >
                 <Space direction="vertical" style={{ width: '100%' }}>
-                  <div><Tag>Type: {c.type}</Tag></div>
-                  <Statistic title="Nodes" value={c.nodeCount || 0} />
-                  <Statistic title="CPU Total" value={c.cpuTotal || 0} suffix="cores" />
-                  <Statistic title="GPU Total" value={c.gpuTotal || 0} suffix="cards" />
-                  <Statistic title="Memory Total" value={c.memoryTotal || 0} suffix="GB" />
-                  <Statistic title="Storage Total" value={c.storageTotal || 0} suffix="GB" />
+                  <div><Tag>类型：{c.type}</Tag></div>
+                  <Statistic title="节点数" value={c.nodeCount || 0} />
+                  <Statistic title="CPU 总量" value={c.cpuTotal || 0} suffix="核" />
+                  <Statistic title="GPU 总量" value={c.gpuTotal || 0} suffix="卡" />
+                  <Statistic title="内存总量" value={c.memoryTotal || 0} suffix="GB" />
+                  <Statistic title="存储总量" value={c.storageTotal || 0} suffix="GB" />
                 </Space>
               </Card>
             </Col>
           );
         })}
       </Row>
-      <Modal title={editing ? 'Edit Cluster' : 'Add Cluster'} open={modalOpen} onCancel={function () { setModalOpen(false); }} onOk={function () { form.submit(); }} destroyOnClose>
+      <Modal title={editing ? '编辑集群' : '新增集群'} open={modalOpen} onCancel={function () { setModalOpen(false); }} onOk={function () { form.submit(); }} destroyOnClose>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+          <Form.Item name="name" label="名称" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="type" label="Type" rules={[{ required: true }]}>
-            <Select options={[{ label: 'Kubernetes', value: 'k8s' }, { label: 'Standalone', value: 'standalone' }, { label: 'YARN', value: 'yarn' }]} />
+          <Form.Item name="type" label="类型" rules={[{ required: true }]}>
+            <Select options={[{ label: 'Kubernetes', value: 'k8s' }, { label: '独立', value: 'standalone' }, { label: 'YARN', value: 'yarn' }]} />
           </Form.Item>
-          <Form.Item name="endpoint" label="Endpoint">
+          <Form.Item name="endpoint" label="接入点">
             <Input />
           </Form.Item>
-          <Form.Item name="description" label="Description">
+          <Form.Item name="description" label="描述">
             <Input.TextArea rows={3} />
           </Form.Item>
         </Form>

@@ -6,6 +6,7 @@ import com.aiplatform.inference.backflow.mapper.BackflowTaskMapper;
 import com.aiplatform.inference.shared.MinioService;
 import com.aiplatform.inference.online.entity.OnlineService;
 import com.aiplatform.inference.online.mapper.OnlineServiceMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

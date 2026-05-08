@@ -35,7 +35,10 @@ export default function DeploymentPage() {
     { title: '服务名称', dataIndex: 'name', key: 'name' },
     { title: '模型', dataIndex: 'modelName', key: 'modelName' },
     { title: '版本', dataIndex: 'modelVersion', key: 'modelVersion' },
-    { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s] || 'default'}>{s}</Tag> },
+    { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => {
+      const statusLabels: Record<string, string> = { RUNNING: '运行中', STOPPED: '已停止', DEPLOYING: '部署中', PENDING: '等待中' }
+      return <Tag color={statusColors[s] || 'default'}>{statusLabels[s] || s}</Tag>
+    }},
     { title: '副本数', dataIndex: 'replicas', key: 'replicas' },
     { title: '发布类型', dataIndex: 'releaseType', key: 'releaseType', render: (t: string) => {
       const colors: Record<string, string> = { canary: 'gold', shadow: 'purple', formal: 'green' }

@@ -42,11 +42,11 @@ function ProjectList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure you want to delete this project?',
+      title: '确认删除',
+      content: '确定要删除该项目吗？',
       onOk: async function () {
         await deleteProject(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
@@ -55,7 +55,7 @@ function ProjectList() {
   async function handleAddMember(values: Record<string, unknown>) {
     if (memberTarget) {
       await addProjectMember(memberTarget.id as string, values);
-      message.success('Member added');
+      message.success('成员已添加');
       const res: any = await listProjectMembers(memberTarget.id as string);
       setMembers(res.data?.items || res.items || []);
     }
@@ -64,27 +64,27 @@ function ProjectList() {
   async function handleRemoveMember(userId: string) {
     if (memberTarget) {
       await removeProjectMember(memberTarget.id as string, userId);
-      message.success('Member removed');
+      message.success('成员已移除');
       const res: any = await listProjectMembers(memberTarget.id as string);
       setMembers(res.data?.items || res.items || []);
     }
   }
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', sorter: true },
-    { title: 'Code', dataIndex: 'code' },
-    { title: 'Description', dataIndex: 'description' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
-    { title: 'Members', dataIndex: 'memberCount' },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '名称', dataIndex: 'name', sorter: true },
+    { title: '编码', dataIndex: 'code' },
+    { title: '描述', dataIndex: 'description' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: '成员数', dataIndex: 'memberCount' },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" icon={<TeamOutlined />} onClick={function () { handleMembers(record); }}>Members</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" icon={<TeamOutlined />} onClick={function () { handleMembers(record); }}>成员</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -97,40 +97,40 @@ function ProjectList() {
         key={refreshKey}
         columns={columns}
         fetchData={listProjects}
-        searchFields={[{ key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Project</Button>}
+        searchFields={[{ key: 'name', label: '名称' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新建项目</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit Project' : 'New Project'}
+        title={editing ? '编辑项目' : '新建项目'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="名称" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="code" label="Code" rules={[{ required: true }]}>
+        <Form.Item name="code" label="编码" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="description" label="Description">
+        <Form.Item name="description" label="描述">
           <Input.TextArea rows={3} />
         </Form.Item>
-        <Form.Item name="tenantId" label="Tenant">
-          <Select placeholder="Select tenant" />
+        <Form.Item name="tenantId" label="租户">
+          <Select placeholder="请选择租户" />
         </Form.Item>
       </DrawerForm>
-      <Drawer title="Project Members" open={memberOpen} onClose={function () { setMemberOpen(false); }} width={480}>
+      <Drawer title="项目成员" open={memberOpen} onClose={function () { setMemberOpen(false); }} width={480}>
         <div style={{ marginBottom: 16 }}>
           <Form layout="inline" onFinish={handleAddMember}>
             <Form.Item name="userId" rules={[{ required: true }]}>
-              <Select placeholder="Select user" style={{ width: 200 }} />
+              <Select placeholder="请选择用户" style={{ width: 200 }} />
             </Form.Item>
             <Form.Item name="role">
-              <Select placeholder="Role" style={{ width: 120 }} options={[{ label: 'Admin', value: 'admin' }, { label: 'Member', value: 'member' }]} />
+              <Select placeholder="角色" style={{ width: 120 }} options={[{ label: '管理员', value: 'admin' }, { label: '成员', value: 'member' }]} />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" icon={<UserAddOutlined />}>Add</Button>
+              <Button type="primary" htmlType="submit" icon={<UserAddOutlined />}>添加</Button>
             </Form.Item>
           </Form>
         </div>

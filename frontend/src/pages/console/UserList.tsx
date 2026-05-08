@@ -44,11 +44,11 @@ function UserList() {
 
   async function handleDelete(id: string) {
     Modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure you want to delete this user?',
+      title: '确认删除',
+      content: '确定要删除该用户吗？',
       onOk: async function () {
         await deleteUser(id);
-        message.success('Deleted');
+        message.success('已删除');
         setRefreshKey(function (k) { return k + 1; });
       },
     });
@@ -57,35 +57,35 @@ function UserList() {
   async function handleRoleSubmit() {
     if (roleTarget) {
       await assignRoles(roleTarget.id as string, selectedRoles);
-      message.success('Roles assigned');
+      message.success('角色已分配');
       setRoleOpen(false);
       setRefreshKey(function (k) { return k + 1; });
     }
   }
 
   const columns = [
-    { title: 'Username', dataIndex: 'username', sorter: true },
-    { title: 'Name', dataIndex: 'name' },
-    { title: 'Email', dataIndex: 'email' },
-    { title: 'Phone', dataIndex: 'phone' },
-    { title: 'Tenant', dataIndex: 'tenantName' },
-    { title: 'Status', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
+    { title: '用户名', dataIndex: 'username', sorter: true },
+    { title: '姓名', dataIndex: 'name' },
+    { title: '邮箱', dataIndex: 'email' },
+    { title: '手机号', dataIndex: 'phone' },
+    { title: '租户', dataIndex: 'tenantName' },
+    { title: '状态', dataIndex: 'status', render: function (status: string) { return <StatusTag status={status} />; } },
     {
-      title: 'Roles',
+      title: '角色',
       dataIndex: 'roles',
       render: function (roles: string[]) {
         return (roles || []).map(function (r) { return <Tag key={r}>{r}</Tag>; });
       },
     },
-    { title: 'Created', dataIndex: 'createdAt', sorter: true },
+    { title: '创建时间', dataIndex: 'createdAt', sorter: true },
     {
-      title: 'Actions',
+      title: '操作',
       render: function (_: unknown, record: Record<string, unknown>) {
         return (
           <Space>
-            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>Edit</Button>
-            <Button type="link" size="small" icon={<SafetyCertificateOutlined />} onClick={function () { handleRoleAssign(record); }}>Roles</Button>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>Delete</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={function () { handleEdit(record); }}>编辑</Button>
+            <Button type="link" size="small" icon={<SafetyCertificateOutlined />} onClick={function () { handleRoleAssign(record); }}>角色</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={function () { handleDelete(record.id as string); }}>删除</Button>
           </Space>
         );
       },
@@ -98,45 +98,45 @@ function UserList() {
         key={refreshKey}
         columns={columns}
         fetchData={listUsers}
-        searchFields={[{ key: 'username', label: 'Username' }, { key: 'name', label: 'Name' }]}
-        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New User</Button>}
+        searchFields={[{ key: 'username', label: '用户名' }, { key: 'name', label: '姓名' }]}
+        toolbar={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>新建用户</Button>}
       />
       <DrawerForm
-        title={editing ? 'Edit User' : 'New User'}
+        title={editing ? '编辑用户' : '新建用户'}
         open={drawerOpen}
         onClose={function () { setDrawerOpen(false); }}
         onSubmit={handleSubmit}
         initialValues={editing || undefined}
       >
-        <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+        <Form.Item name="username" label="用户名" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
         {editing ? null : (
-          <Form.Item name="password" label="Password" rules={[{ required: true }]}>
+          <Form.Item name="password" label="密码" rules={[{ required: true }]}>
             <Input.Password />
           </Form.Item>
         )}
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="姓名" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="email" label="Email">
+        <Form.Item name="email" label="邮箱">
           <Input />
         </Form.Item>
-        <Form.Item name="phone" label="Phone">
+        <Form.Item name="phone" label="手机号">
           <Input />
         </Form.Item>
-        <Form.Item name="tenantId" label="Tenant">
-          <Select placeholder="Select tenant" />
+        <Form.Item name="tenantId" label="租户">
+          <Select placeholder="请选择租户" />
         </Form.Item>
       </DrawerForm>
-      <Modal title="Assign Roles" open={roleOpen} onCancel={function () { setRoleOpen(false); }} onOk={handleRoleSubmit}>
+      <Modal title="分配角色" open={roleOpen} onCancel={function () { setRoleOpen(false); }} onOk={handleRoleSubmit}>
         <Select
           mode="multiple"
           style={{ width: '100%' }}
           value={selectedRoles}
           onChange={setSelectedRoles}
           options={allRoles.map(function (r: any) { return { label: r.name, value: r.id }; })}
-          placeholder="Select roles"
+          placeholder="请选择角色"
         />
       </Modal>
     </div>
