@@ -23,6 +23,12 @@ spring:
             - Path=/api/console/**
           filters:
             - StripPrefix=2
+        - id: operation-v1
+          uri: http://operation:8082
+          predicates:
+            - Path=/api/v1/clusters/**,/api/v1/images/**,/api/v1/environments/**,/api/v1/resource-pools/**,/api/v1/resource-quotas/**
+          filters:
+            - RewritePath=/api/v1/(?<segment>.*), /${segment}
         - id: operation-service
           uri: http://operation:8082
           predicates:

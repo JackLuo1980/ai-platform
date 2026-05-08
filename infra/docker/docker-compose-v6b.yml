@@ -1,0 +1,90 @@
+services:
+  lab:
+    image: eclipse-temurin:21-jre-alpine
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
+      - SPRING_DATASOURCE_USERNAME=aiplatform
+      - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
+      - SPRING_DATA_REDIS_HOST=10.0.0.1
+      - SPRING_DATA_REDIS_PORT=6379
+      - NATS_URL=nats://10.0.0.1:4222
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - DOCKER_ENABLED=true
+    volumes:
+      - ../../services/lab/build/libs/lab.jar:/app/app.jar:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    mem_limit: 2g
+    restart: unless-stopped
+    command: ["java", "-jar", "/app/app.jar"]
+
+  inference:
+    image: eclipse-temurin:21-jre-alpine
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
+      - SPRING_DATASOURCE_USERNAME=aiplatform
+      - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
+      - SPRING_DATA_REDIS_HOST=10.0.0.1
+      - SPRING_DATA_REDIS_PORT=6379
+      - NATS_URL=nats://10.0.0.1:4222
+    volumes:
+      - ../../services/inference/build/libs/inference.jar:/app/app.jar:ro
+    mem_limit: 1536m
+    restart: unless-stopped
+    command: ["java", "-jar", "/app/app.jar"]
+
+  fastlabel:
+    image: eclipse-temurin:21-jre-alpine
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
+      - SPRING_DATASOURCE_USERNAME=aiplatform
+      - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
+      - SPRING_DATA_REDIS_HOST=10.0.0.1
+      - SPRING_DATA_REDIS_PORT=6379
+      - NATS_URL=nats://10.0.0.1:4222
+      - MINIO_ENDPOINT=http://10.0.0.2:9000
+      - MINIO_ACCESS_KEY=aiplatform
+      - MINIO_SECRET_KEY=AiPlatform2026Minio!
+      - MINIO_BUCKET=fastlabel
+    volumes:
+      - ../../services/fastlabel/build/libs/fastlabel.jar:/app/app.jar:ro
+    mem_limit: 1536m
+    restart: unless-stopped
+    command: ["java", "-jar", "/app/app.jar"]
+
+  scorecard:
+    image: eclipse-temurin:21-jre-alpine
+    ports:
+      - "8086:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://10.0.0.2:5432/aiplatform?stringtype=unspecified
+      - SPRING_DATASOURCE_USERNAME=aiplatform
+      - SPRING_DATASOURCE_PASSWORD=AiPlatform2026Pg!
+    volumes:
+      - ../../services/scorecard/build/libs/scorecard.jar:/app/app.jar:ro
+    mem_limit: 512m
+    restart: unless-stopped
+    command: ["java", "-jar", "/app/app.jar"]
+
+  mlflow:
+    image: python:3.10-slim
+    ports:
+      - "5000:5000"
+    environment:
+      - AWS_ACCESS_KEY_ID=aiplatform
+      - AWS_SECRET_ACCESS_KEY=AiPlatform2026Minio!
+      - AWS_ENDPOINT_URL=http://10.0.0.2:9000
+      - MLFLOW_S3_ENDPOINT_URL=http://10.0.0.2:9000
+    mem_limit: 2g
+    restart: unless-stopped
+    command: ["sh", "-c", "pip install mlflow==2.21.3 psycopg2-binary boto3 -q && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri postgresql://aiplatform:AiPlatform2026Pg!@10.0.0.2:5432/mlflow --default-artifact-root s3://mlflow/artifacts"]
+

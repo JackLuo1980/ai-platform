@@ -37,6 +37,7 @@ import {
   CalculatorOutlined,
   ScissorOutlined,
   BlockOutlined,
+  RocketOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 
@@ -67,6 +68,7 @@ const menuItems: MenuProps['items'] = [
       { key: '/operation/quotas', icon: <AppstoreOutlined />, label: 'Quotas' },
       { key: '/operation/images', icon: <CloudServerOutlined />, label: 'Images' },
       { key: '/operation/environments', icon: <ExperimentOutlined />, label: 'Environments' },
+      { key: '/operation/monitoring', icon: <LineChartOutlined />, label: 'Monitoring' },
     ],
   },
   {
@@ -82,6 +84,7 @@ const menuItems: MenuProps['items'] = [
       { key: '/lab/archives', icon: <InboxOutlined />, label: 'Archives' },
       { key: '/lab/features', icon: <StarOutlined />, label: 'Features' },
       { key: '/lab/files', icon: <FolderOutlined />, label: 'Files' },
+      { key: '/lab/automl', icon: <ThunderboltOutlined />, label: 'AutoML' },
     ],
   },
   {
@@ -95,6 +98,7 @@ const menuItems: MenuProps['items'] = [
       { key: '/inference/monitoring', icon: <LineChartOutlined />, label: 'Monitoring' },
       { key: '/inference/evaluations', icon: <FundProjectionScreenOutlined />, label: 'Evaluations' },
       { key: '/inference/drift', icon: <SwapOutlined />, label: 'Drift' },
+      { key: '/inference/deployment', icon: <RocketOutlined />, label: 'Deployment' },
     ],
   },
   {

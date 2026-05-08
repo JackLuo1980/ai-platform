@@ -2,6 +2,8 @@ server:
   port: 8084
 
 spring:
+  flyway:
+    enabled: false
   datasource:
     url: jdbc:postgresql://localhost:5432/inference_db
     username: inference_admin

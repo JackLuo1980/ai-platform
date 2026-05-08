@@ -26,8 +26,11 @@ import ModelList from './pages/inference/ModelList';
 import OnlineServiceList from './pages/inference/OnlineServiceList';
 import BatchServiceList from './pages/inference/BatchServiceList';
 import MonitoringDashboard from './pages/inference/MonitoringDashboard';
+import AutoMLPage from './pages/lab/AutoMLPage';
+import OperationMonitoring from './pages/operation/MonitoringDashboard';
 import EvaluationList from './pages/inference/EvaluationList';
 import DriftDashboard from './pages/inference/DriftDashboard';
+import DeploymentPage from './pages/inference/DeploymentPage';
 import LabelDatasetList from './pages/fastlabel/LabelDatasetList';
 import TaskList from './pages/fastlabel/TaskList';
 import AnnotationPage from './pages/fastlabel/AnnotationPage';
@@ -36,6 +39,7 @@ import VariableList from './pages/scorecard/VariableList';
 import BinningDetail from './pages/scorecard/BinningDetail';
 import ScorecardModelList from './pages/scorecard/ModelList';
 import ScoringPage from './pages/scorecard/ScoringPage';
+import LicensePage from './pages/console/LicensePage';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
@@ -66,6 +70,7 @@ function App() {
         <Route path="operation/quotas" element={<QuotaList />} />
         <Route path="operation/images" element={<ImageList />} />
         <Route path="operation/environments" element={<EnvironmentList />} />
+        <Route path="operation/monitoring" element={<OperationMonitoring />} />
         <Route path="lab/datasources" element={<DataSourceList />} />
         <Route path="lab/datasets" element={<DatasetList />} />
         <Route path="lab/datasets/:id" element={<DataPreview />} />
@@ -76,6 +81,7 @@ function App() {
         <Route path="lab/archives" element={<ModelArchiveList />} />
         <Route path="lab/features" element={<FeatureGroupList />} />
         <Route path="lab/files" element={<FileManager />} />
+        <Route path="lab/automl" element={<AutoMLPage />} />
         <Route path="inference/models" element={<ModelList />} />
         <Route path="inference/online-services" element={<OnlineServiceList />} />
         <Route path="inference/batch-services" element={<BatchServiceList />} />
