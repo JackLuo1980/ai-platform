@@ -49,6 +49,80 @@ public class QuotaService {
         return R.ok(quota);
     }
 
+    public ResourceQuota create(ResourceQuota quota) {
+        if (quota.getPriority() == null) { quota.setPriority("MEDIUM"); }
+        if (quota.getPreemptionPolicy() == null) { quota.setPreemptionPolicy("NONE"); }
+        if (quota.getStatus() == null) { quota.setStatus("ACTIVE"); }
+        if (quota.getCpuGuaranteed() == null) { quota.setCpuGuaranteed(BigDecimal.ZERO); }
+        if (quota.getMemoryGuaranteed() == null) { quota.setMemoryGuaranteed(BigDecimal.ZERO); }
+        if (quota.getGpuGuaranteed() == null) { quota.setGpuGuaranteed(BigDecimal.ZERO); }
+        resourceQuotaMapper.insert(quota);
+        return quota;
+    }
+
+    public boolean checkPreemption(Long requestingQuotaId, BigDecimal cpuNeeded, BigDecimal memoryNeeded, BigDecimal gpuNeeded) {
+        ResourceQuota requester = resourceQuotaMapper.selectById(requestingQuotaId);
+        if (requester == null) { return false; }
+        if (!"PREEMPT_LOWER".equals(requester.getPreemptionPolicy())
+                && !"PREEMPT_ALL".equals(requester.getPreemptionPolicy())) {
+            return false;
+        }
+
+        ResourcePool pool = resourcePoolMapper.selectById(requester.getResourcePoolId());
+        if (pool == null) { return false; }
+
+        BigDecimal availableCpu = BigDecimal.ZERO;
+        BigDecimal availableMemory = BigDecimal.ZERO;
+        BigDecimal availableGpu = BigDecimal.ZERO;
+        try {
+            if (pool.getUsedCapacity() != null) {
+                JsonNode used = objectMapper.readTree(pool.getUsedCapacity());
+                JsonNode total = pool.getTotalCapacity() != null ? objectMapper.readTree(pool.getTotalCapacity()) : null;
+                if (total != null) {
+                    availableCpu = total.has("cpu") ? total.get("cpu").decimalValue().subtract(used.has("cpu") ? used.get("cpu").decimalValue() : BigDecimal.ZERO) : BigDecimal.ZERO;
+                    availableMemory = total.has("memory") ? total.get("memory").decimalValue().subtract(used.has("memory") ? used.get("memory").decimalValue() : BigDecimal.ZERO) : BigDecimal.ZERO;
+                    availableGpu = total.has("gpu") ? total.get("gpu").decimalValue().subtract(used.has("gpu") ? used.get("gpu").decimalValue() : BigDecimal.ZERO) : BigDecimal.ZERO;
+                }
+            }
+        } catch (Exception e) { /* ignore */ }
+
+        boolean sufficient = (cpuNeeded == null || availableCpu.compareTo(cpuNeeded) >= 0)
+                && (memoryNeeded == null || availableMemory.compareTo(memoryNeeded) >= 0)
+                && (gpuNeeded == null || availableGpu.compareTo(gpuNeeded) >= 0);
+        if (sufficient) { return true; }
+
+        LambdaQueryWrapper<ResourceQuota> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ResourceQuota::getResourcePoolId, requester.getResourcePoolId());
+        wrapper.eq(ResourceQuota::getStatus, "ACTIVE");
+        java.util.List<ResourceQuota> allQuotas = resourceQuotaMapper.selectList(wrapper);
+
+        java.util.Map<String, Integer> priorityOrder = java.util.Map.of("HIGH", 3, "MEDIUM", 2, "LOW", 1);
+        int requesterPriority = priorityOrder.getOrDefault(requester.getPriority(), 2);
+
+        allQuotas.sort((a, b) -> priorityOrder.getOrDefault(a.getPriority(), 2) - priorityOrder.getOrDefault(b.getPriority(), 2));
+
+        for (ResourceQuota q : allQuotas) {
+            if (q.getId().equals(requestingQuotaId)) { continue; }
+            int qPriority = priorityOrder.getOrDefault(q.getPriority(), 2);
+            if ("PREEMPT_LOWER".equals(requester.getPreemptionPolicy()) && qPriority >= requesterPriority) {
+                continue;
+            }
+            BigDecimal reclaimableCpu = q.getCpuGuaranteed() != null ? q.getCpuLimit().subtract(q.getCpuGuaranteed()) : q.getCpuLimit();
+            BigDecimal reclaimableMemory = q.getMemoryGuaranteed() != null ? q.getMemoryLimit().subtract(q.getMemoryGuaranteed()) : q.getMemoryLimit();
+            BigDecimal reclaimableGpu = q.getGpuGuaranteed() != null ? q.getGpuLimit().subtract(q.getGpuGuaranteed()) : q.getGpuLimit();
+
+            availableCpu = availableCpu.add(reclaimableCpu != null ? reclaimableCpu : BigDecimal.ZERO);
+            availableMemory = availableMemory.add(reclaimableMemory != null ? reclaimableMemory : BigDecimal.ZERO);
+            availableGpu = availableGpu.add(reclaimableGpu != null ? reclaimableGpu : BigDecimal.ZERO);
+
+            sufficient = (cpuNeeded == null || availableCpu.compareTo(cpuNeeded) >= 0)
+                    && (memoryNeeded == null || availableMemory.compareTo(memoryNeeded) >= 0)
+                    && (gpuNeeded == null || availableGpu.compareTo(gpuNeeded) >= 0);
+            if (sufficient) { return true; }
+        }
+        return false;
+    }
+
     private R<Void> validateQuota(ResourceQuota quota) {
         if (quota.getResourcePoolId() == null) {
             return R.ok();

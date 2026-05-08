@@ -52,6 +52,10 @@ export function listQuotas(params?: Record<string, unknown>) {
   return request.get('/api/v1/resource-quotas', { params });
 }
 
+export function createQuota(data: Record<string, unknown>) {
+  return request.post('/api/v1/resource-quotas', data);
+}
+
 export function updateQuota(id: string, data: Record<string, unknown>) {
   return request.put('/api/v1/resource-quotas/' + id, data);
 }

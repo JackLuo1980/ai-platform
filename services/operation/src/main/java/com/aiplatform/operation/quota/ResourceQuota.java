@@ -24,6 +24,21 @@ public class ResourceQuota extends BaseEntity {
     @TableField("gpu_limit")
     private BigDecimal gpuLimit;
 
+    private String priority;
+
+    @TableField("cpu_guaranteed")
+    private BigDecimal cpuGuaranteed;
+
+    @TableField("memory_guaranteed")
+    private BigDecimal memoryGuaranteed;
+
+    @TableField("gpu_guaranteed")
+    private BigDecimal gpuGuaranteed;
+
+    private String preemptionPolicy;
+
+    private String status;
+
     public Long getTenantId() {
         return tenantId;
     }
@@ -71,4 +86,22 @@ public class ResourceQuota extends BaseEntity {
     public void setGpuLimit(BigDecimal gpuLimit) {
         this.gpuLimit = gpuLimit;
     }
+
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
+
+    public BigDecimal getCpuGuaranteed() { return cpuGuaranteed; }
+    public void setCpuGuaranteed(BigDecimal cpuGuaranteed) { this.cpuGuaranteed = cpuGuaranteed; }
+
+    public BigDecimal getMemoryGuaranteed() { return memoryGuaranteed; }
+    public void setMemoryGuaranteed(BigDecimal memoryGuaranteed) { this.memoryGuaranteed = memoryGuaranteed; }
+
+    public BigDecimal getGpuGuaranteed() { return gpuGuaranteed; }
+    public void setGpuGuaranteed(BigDecimal gpuGuaranteed) { this.gpuGuaranteed = gpuGuaranteed; }
+
+    public String getPreemptionPolicy() { return preemptionPolicy; }
+    public void setPreemptionPolicy(String preemptionPolicy) { this.preemptionPolicy = preemptionPolicy; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }
