@@ -173,6 +173,20 @@ public class LabelItemService {
                 }
             }
         }
+
+        if (node.has("segments")) {
+            ArrayNode segments = (ArrayNode) node.get("segments");
+            for (JsonNode seg : segments) {
+                if (!seg.has("start") || !seg.has("end") || !seg.has("label")) {
+                    throw new RuntimeException("Invalid audio segment annotation: missing required fields (start, end, label)");
+                }
+                double start = seg.get("start").asDouble();
+                double end = seg.get("end").asDouble();
+                if (start < 0 || end < 0 || end <= start) {
+                    throw new RuntimeException("Invalid audio segment: start must be >= 0 and end must be > start");
+                }
+            }
+        }
     }
 
     public List<LabelItem> listItems(Long taskId, String status) {

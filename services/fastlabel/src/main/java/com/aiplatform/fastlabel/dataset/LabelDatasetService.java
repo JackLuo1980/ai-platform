@@ -93,8 +93,8 @@ public class LabelDatasetService {
         datasetMapper.insert(dataset);
 
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename != null && isImageFile(originalFilename)) {
-            extractImageItems(dataset, file);
+        if (originalFilename != null && isMediaFile(originalFilename)) {
+            extractMediaItems(dataset, file);
         } else {
             extractJsonlItems(dataset, file);
         }
@@ -103,7 +103,7 @@ public class LabelDatasetService {
     }
 
     @SneakyThrows
-    private void extractImageItems(LabelDataset dataset, MultipartFile file) {
+    private void extractMediaItems(LabelDataset dataset, MultipartFile file) {
         String objectName = "datasets/" + dataset.getId() + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
         minioService.upload(objectName, file.getInputStream(), file.getContentType());
 
@@ -160,9 +160,23 @@ public class LabelDatasetService {
         }
     }
 
-    private boolean isImageFile(String filename) {
+    private boolean isMediaFile(String filename) {
         String lower = filename.toLowerCase();
+        return isImageFile(lower) || isAudioFile(lower);
+    }
+
+    private boolean isImageFile(String lower) {
         return lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png")
                 || lower.endsWith(".bmp") || lower.endsWith(".gif") || lower.endsWith(".tiff");
+    }
+
+    private boolean isAudioFile(String lower) {
+        return lower.endsWith(".mp3") || lower.endsWith(".wav") || lower.endsWith(".flac")
+                || lower.endsWith(".ogg") || lower.endsWith(".m4a") || lower.endsWith(".aac")
+                || lower.endsWith(".wma") || lower.endsWith(".opus");
+    }
+
+    private boolean isImageFile(String filename) {
+        return isImageFile(filename.toLowerCase());
     }
 }
