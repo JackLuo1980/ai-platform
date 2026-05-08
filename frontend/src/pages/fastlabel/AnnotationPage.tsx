@@ -150,7 +150,7 @@ function AnnotationPage() {
           <div style={{ marginTop: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <Button icon={playing ? <PauseCircleOutlined /> : <PlayCircleOutlined />} onClick={togglePlay} />
-              <Slider min={0} max={audioDuration || 100} step={0.1} value={currentTime} onChange={function (v) { if (audioRef.current) { audioRef.current.currentTime = v; setCurrentTime(v); } }} style={{ flex: 1 }} tooltipFormatter={function (v) { return formatTime(v || 0); }} />
+              <Slider min={0} max={audioDuration || 100} step={0.1} value={currentTime} onChange={function (v: number) { if (audioRef.current) { audioRef.current.currentTime = v; setCurrentTime(v); } }} style={{ flex: 1 }} tipFormatter={function (v: number) { return formatTime(v || 0); }} />
               <span style={{ fontSize: 12, color: '#666', minWidth: 100 }}>{formatTime(currentTime)} / {formatTime(audioDuration)}</span>
             </div>
             <div style={{ position: 'relative', height: 32, background: '#e8e8e8', borderRadius: 4, marginBottom: 12, overflow: 'hidden' }}>
@@ -199,11 +199,11 @@ function AnnotationPage() {
         <Card title="音频标注" loading={loading}>
           <div style={{ marginBottom: 12 }}>
             <div style={{ marginBottom: 4, fontSize: 13 }}>开始时间: {formatTime(segStart)}</div>
-            <Slider min={0} max={audioDuration || 100} step={0.1} value={segStart} onChange={setSegStart} tooltipFormatter={function (v) { return formatTime(v || 0); }} />
+            <Slider min={0} max={audioDuration || 100} step={0.1} value={segStart} onChange={setSegStart} tipFormatter={function (v: number) { return formatTime(v || 0); }} />
           </div>
           <div style={{ marginBottom: 12 }}>
             <div style={{ marginBottom: 4, fontSize: 13 }}>结束时间: {formatTime(segEnd)}</div>
-            <Slider min={0} max={audioDuration || 100} step={0.1} value={segEnd} onChange={setSegEnd} tooltipFormatter={function (v) { return formatTime(v || 0); }} />
+            <Slider min={0} max={audioDuration || 100} step={0.1} value={segEnd} onChange={setSegEnd} tipFormatter={function (v: number) { return formatTime(v || 0); }} />
           </div>
           <Input placeholder="标签 (必填)" value={segLabel} onChange={function (e) { setSegLabel(e.target.value); }} style={{ marginBottom: 8 }} />
           <Input.TextArea placeholder="转写文本 (可选)" value={segText} onChange={function (e) { setSegText(e.target.value); }} rows={2} style={{ marginBottom: 8 }} />
